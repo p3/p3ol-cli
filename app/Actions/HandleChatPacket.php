@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Actions\SendDesktopNotification;
 use App\DTO\Packet;
 use Clue\React\Stdio\Stdio;
 use Illuminate\Support\Facades\Cache;
@@ -26,8 +27,6 @@ class HandleChatPacket
         };
     }
 
-    // cD packet resposne = info on room
-    // cQ is the response to the cQ packet
     private function parsePeopleInRoom(Packet $packet): void
     {
         $roomList = collect(explode('100b01010b0200011d000b01', $packet->hex()))
@@ -54,6 +53,10 @@ class HandleChatPacket
             return;
         }
 
+        if ($this->hasMention($message->last())) {
+            SendDesktopNotification::run($message->first(), $message->last());
+        }
+
         $this->console->write($message->join(': ').PHP_EOL);
     }
 
@@ -69,6 +72,11 @@ class HandleChatPacket
         with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
         });
+    }
+
+    private function hasMention(string $message): bool
+    {
+        return preg_match("/\b{$this->screenName()}\b/i", $message);
     }
 
     private function screenName(): ?string
