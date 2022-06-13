@@ -1,5 +1,4 @@
 <?php
-//@codingStandardsIgnoreStart
 namespace App\Enums;
 
 enum ChatroomPacket: string
