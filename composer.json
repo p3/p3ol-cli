@@ -1,18 +1,18 @@
 {
-    "name": "laravel-zero/laravel-zero",
-    "description": "The Laravel Zero Framework.",
-    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
-    "homepage": "https://laravel-zero.com",
+    "name": "joecampo/retro-aol-cli",
+    "description": "An unofficial CLI version for the RE(tro)-AOL.",
+    "keywords": ["retro", "aol", "america online", "re-aol"],
+    "homepage": "https://retroaol.org",
     "type": "project",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
-        "source": "https://github.com/laravel-zero/laravel-zero"
+        "issues": "https://github.com/joecampo/retro-aol-cli/issues",
+        "source": "https://github.com/joecampo/retro-aol-cli"
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Joe Campo",
+            "email": "joe@discord.com"
         }
     ],
     "require": {
