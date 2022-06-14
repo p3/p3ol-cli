@@ -1,5 +1,9 @@
 <?php
 
+use Clue\React\Stdio\Readline;
+use Clue\React\Stdio\Stdio;
+use React\EventLoop\Loop;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -39,7 +43,19 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function fixture($name)
 {
-    // ..
+    return hex2bin(file_get_contents(__DIR__.'/Feature/fixtures/'.$name.'.txt'));
+}
+
+function startConsole()
+{
+    $input = test()->getMockBuilder('React\Stream\ReadableStreamInterface')->getMock();
+    $output = test()->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();
+
+    test()->console = new Stdio(Loop::get(), $input, $output, new Readline($input, $output));
+
+    $output->expects(test()->any())->method('write')->will(test()->returnCallback(function ($data) {
+        test()->output = $data;
+    }));
 }

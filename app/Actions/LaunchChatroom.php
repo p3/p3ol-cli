@@ -11,6 +11,7 @@ use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
+use function Termwind\{terminal}; //@codingStandardsIgnoreLine
 
 class LaunchChatroom
 {
@@ -37,13 +38,15 @@ class LaunchChatroom
     {
         $this->console = new Stdio();
 
+        collect()->times(terminal()->height(), fn () =>  $this->console->write(PHP_EOL));
+
         $this->console->on('data', fn ($line) => $this->parseConsoleInput(rtrim($line, "\r\n")));
     }
 
     private function parseConsoleInput(string $input): void
     {
         match (true) {
-            strpos($input, '/', 0) !== false => HandleChatCommand::run($this->console, $input),
+            substr($input, 0, 1) === '/' => HandleChatCommand::run($this->console, $input),
             default => SendChatMessage::run($this->connection, $input),
         };
     }

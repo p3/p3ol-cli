@@ -21,7 +21,7 @@ class HandleChatPacket
         match ($packet->token()) {
             'AT' => $this->parsePeopleInRoom($packet),
             'AB' => $this->parseRoomMessage($packet),
-            'CA' => $this->parseEnterance($packet),
+            'CA' => $this->parseEntrance($packet),
             'CB' => $this->parseGoodbye($packet),
             default => info($packet->hex())
         };
@@ -45,8 +45,8 @@ class HandleChatPacket
 
     private function parseRoomMessage(Packet $packet): void
     {
-        $message = collect(explode('000000', substr($packet->hex(), 20)))
-            ->filter()
+        $message = collect(substr($packet->hex(), 20))
+            ->flatMap(fn ($data) => str($data)->replaceLast('000000', '|')->explode('|'))
             ->map(fn ($data) => trim(utf8_encode(hex2bin($data))));
 
         if ($message->first() === $this->screenName()) {
@@ -60,7 +60,7 @@ class HandleChatPacket
         $this->console->write($message->join(': ').PHP_EOL);
     }
 
-    private function parseEnterance(Packet $packet): void
+    private function parseEntrance(Packet $packet): void
     {
         with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             $this->console->write($screenName.' has entered the room.'.PHP_EOL);

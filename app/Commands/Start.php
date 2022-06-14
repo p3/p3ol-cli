@@ -8,6 +8,7 @@ use App\Actions\FetchChatrooms;
 use App\Actions\LoginAsGuest;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
+use App\DTO\Packet;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
@@ -17,7 +18,6 @@ use React\EventLoop\Loop;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
-use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class Start extends Command implements SignalableCommandInterface
 {
@@ -46,9 +46,10 @@ class Start extends Command implements SignalableCommandInterface
             $connector->connect(self::HOST)->then(function (ConnectionInterface $connection) {
                 $this->connection = $connection;
 
-                $connection->on('close', function () {
-                    render("\e[H\e[J");
-                    render('The connection has unexpectedly closed..');
+                $connection->on('data', function ($data) {
+                    if (! \Phar::running()) {
+                        info(Packet::make($data)->hex());
+                    }
                 });
 
                 LoginAsGuest::run($connection);

@@ -5,3 +5,4 @@
 /storage/*
 /builds/*
 .phpunit.result.cache
+/database/database.sqlite
