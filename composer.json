@@ -20,7 +20,6 @@
         "clue/stdio-react": "^2.6",
         "illuminate/database": "^9.0",
         "illuminate/log": "^9.0",
-        "laravel-zero/framework": "^9.0",
         "laravel-zero/phar-updater": "^1.2",
         "lorisleiva/laravel-actions": "^2.4",
         "nunomaduro/laravel-console-menu": "^3.2",
@@ -31,6 +30,7 @@
     "require-dev": {
         "clue/block-react": "^1.5",
         "fakerphp/faker": "^1.9.1",
+        "laravel-zero/framework": "^9.0",
         "mockery/mockery": "^1.4.4",
         "pestphp/pest": "^1.21.1",
         "spatie/invade": "^1.0"
@@ -60,5 +60,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["reaol"]
+    "bin": ["builds/reaol"]
 }
