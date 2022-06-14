@@ -10,14 +10,13 @@ Read all about the efforts to reverse engineer AOL 3.0 here: [AOL 3.0 is Back](h
 
 **Table of Contents**
 
-- [🖥 Retro AOL® CLI](#-retro-aol-cli)
-  - [Installation & Usage](#installation--usage)
-  - [Self Updates](#self-updates)
-  - [Features](#features)
+- [Installation & Usage](#installation--usage)
+- [Self Updates](#self-updates)
+- [Features](#features)
     - [Chat Commands](#chat-commands)
-      - [Feature Pipeline](#feature-pipeline)
-![image](https://user-images.githubusercontent.com/3619398/173594316-ea31862b-741a-4f20-872d-d8e2a0c82bc7.png)
+- [Feature Pipeline](#feature-pipeline)
 
+![image](https://user-images.githubusercontent.com/3619398/173594316-ea31862b-741a-4f20-872d-d8e2a0c82bc7.png)
 
 ## Installation & Usage
 
