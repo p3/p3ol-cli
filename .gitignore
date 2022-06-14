@@ -3,6 +3,6 @@
 /.vscode
 /.vagrant
 /storage/*
-./builds/logs
+/builds/logs
 .phpunit.result.cache
 /database/database.sqlite
