@@ -38,6 +38,7 @@ class HandleChatPacket
             $this->console->setPrompt($this->screenName().': ');
 
             Cache::put('room_list', $roomList);
+            $this->console->setAutocomplete(fn () => $roomList->map(fn ($name) => strtolower($name))->toArray());
 
             $this->console->write($roomList->implode(', ').' are currently in this room.'.PHP_EOL);
         }
@@ -63,6 +64,8 @@ class HandleChatPacket
     private function parseEntrance(Packet $packet): void
     {
         with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+            Cache::put('room_list', Cache::get('room_list')->push($screenName)->unique());
+
             $this->console->write($screenName.' has entered the room.'.PHP_EOL);
         });
     }
@@ -70,6 +73,8 @@ class HandleChatPacket
     private function parseGoodbye(Packet $packet): void
     {
         with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+            Cache::put('room_list', Cache::get('room_list')->reject(fn ($name) => $name === $screenName));
+
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
         });
     }
