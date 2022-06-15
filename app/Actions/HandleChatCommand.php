@@ -23,7 +23,7 @@ class HandleChatCommand
         [$command, $input] = $this->parseInput($input);
 
         match ($command) {
-            '/quit' => QuitChat::dispatch($console),
+            '/quit' => QuitChat::dispatch(),
             '/here' => $this->displayRoomList(),
             '/packet' => $this->handlePacket($input),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)

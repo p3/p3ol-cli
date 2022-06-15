@@ -52,6 +52,10 @@ class Start extends Command implements SignalableCommandInterface
                     }
                 });
 
+                $connection->on('close', function () {
+                    StopHeartbeat::dispatch();
+                });
+
                 LoginAsGuest::run($connection);
                 StartHeartbeat::run($connection);
             });
@@ -66,7 +70,6 @@ class Start extends Command implements SignalableCommandInterface
         });
 
         Event::listen(QuitChat::class, function (QuitChat $event) {
-            $event->console->end();
             $this->handleSignal(15);
         });
     }
@@ -78,14 +81,8 @@ class Start extends Command implements SignalableCommandInterface
 
     public function handleSignal(int $signal): void
     {
-        StopHeartbeat::dispatch();
-
         if (isset($this->connection)) {
             Logoff::run($this->connection);
-        }
-
-        if (self::HOST === 'localhost:5190') {
-            $this->connection->close();
         }
     }
 }
