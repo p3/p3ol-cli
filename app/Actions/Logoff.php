@@ -12,6 +12,6 @@ class Logoff
 
     public function handle(ConnectionInterface $connection): void
     {
-        $connection->write(hex2bin(AuthPacket::pE_PACKET->value));
+        $connection->write(hex2binary(AuthPacket::pE_PACKET->value));
     }
 }

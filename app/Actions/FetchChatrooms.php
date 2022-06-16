@@ -26,7 +26,7 @@ class FetchChatrooms
         $this->set('packets', collect());
         $this->set('connection', $connection);
 
-        $connection->write(hex2bin(ChatroomPacket::CJ_PACKET->value));
+        $connection->write(hex2binary(ChatroomPacket::CJ_PACKET->value));
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
@@ -48,7 +48,7 @@ class FetchChatrooms
 
                 return collect($output[1])->zip($output[2])->toArray();
             })
-            ->map(fn ($value) => ['people' => intval(hex2bin($value[0])), 'name' => hex2bin($value[1])]);
+            ->map(fn ($value) => ['people' => intval(hex2binary($value[0])), 'name' => hex2binary($value[1])]);
     }
 
     private function startTimer(): void

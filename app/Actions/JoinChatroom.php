@@ -17,7 +17,7 @@ class JoinChatroom
             $packet = str_replace('{replace}', $roomNameLengthByte.bin2hex($roomName), $packet);
             $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
 
-            $connection->write(hex2bin($packet));
+            $connection->write(hex2binary($packet));
         });
     }
 }

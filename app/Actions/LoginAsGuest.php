@@ -50,7 +50,7 @@ class LoginAsGuest
 
     private function sendDdPacket(): void
     {
-        $this->connection->write(hex2bin(AuthPacket::Dd_PACKET->value));
+        $this->connection->write(hex2binary(AuthPacket::Dd_PACKET->value));
 
         $this->updateProgressBar('Step 2: Shaking hands ...', 50);
 
@@ -64,7 +64,7 @@ class LoginAsGuest
 
     private function sendScPacket(): void
     {
-        $this->connection->write(hex2bin(AuthPacket::SC_PACKET->value));
+        $this->connection->write(hex2binary(AuthPacket::SC_PACKET->value));
 
         $this->updateProgressBar('Step 3: Wrapping up ...', 75);
 
@@ -89,7 +89,7 @@ class LoginAsGuest
 
     protected function sendVersionPacket(): void
     {
-        $this->connection->write(hex2bin(AuthPacket::VERSION->value));
+        $this->connection->write(hex2binary(AuthPacket::VERSION->value));
 
         $this->state = SignOnState::NEEDS_Dd_PACKET;
     }

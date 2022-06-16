@@ -18,7 +18,7 @@ class StartHeartbeat
         with(Loop::get(), function (StreamSelectLoop $loop) use ($connection) {
             $loop->addPeriodicTimer(120, function () use ($connection) {
                 // 5a ## ## 00 03 ## ## ## 0d
-                $connection->write(hex2bin('5ac93300031847a60d'));
+                $connection->write(hex2binary('5ac93300031847a60d'));
             });
 
             Event::listen(StopHeartbeat::class, function () use ($loop) {

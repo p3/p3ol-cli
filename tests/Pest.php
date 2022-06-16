@@ -45,7 +45,7 @@ expect()->extend('toBeOne', function () {
 
 function fixture($name)
 {
-    return hex2bin(file_get_contents(__DIR__.'/Feature/fixtures/'.$name.'.txt'));
+    return hex2binary(file_get_contents(__DIR__.'/Feature/fixtures/'.$name.'.txt'));
 }
 
 function startConsole()

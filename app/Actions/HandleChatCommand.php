@@ -55,7 +55,7 @@ class HandleChatCommand
             $this->console->write('Invalid packet.'.PHP_EOL);
         }
 
-        $this->connection->write(hex2bin($input));
+        $this->connection->write(hex2binary($input));
     }
 
     private function parseInput(string $input): array

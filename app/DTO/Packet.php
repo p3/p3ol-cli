@@ -22,6 +22,6 @@ class Packet
     //@see https://wiki.nina.chat/wiki/Protocols/AOL/Tokens
     public function token(): string
     {
-        return hex2bin(substr($this->hex(), 16, 4));
+        return hex2binary(substr($this->hex(), 16, 4));
     }
 }

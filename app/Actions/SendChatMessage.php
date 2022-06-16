@@ -21,7 +21,7 @@ class SendChatMessage
             $packet = str_replace('{replace}', $messageLengthByte.bin2hex($message), $packet);
             $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
 
-            $connection->write(hex2bin($packet));
+            $connection->write(hex2binary($packet));
         });
     }
 }

@@ -31,7 +31,7 @@ class HandleChatPacket
     {
         $roomList = collect(explode('100b01010b0200011d000b01', $packet->hex()))
             ->splice(1)
-            ->map(fn ($name) => hex2bin(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
+            ->map(fn ($name) => hex2binary(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
 
         if (! $this->screenName()) {
             Cache::put('screen_name', $roomList->pop());
@@ -48,7 +48,7 @@ class HandleChatPacket
     {
         $message = collect(substr($packet->hex(), 20))
             ->flatMap(fn ($data) => str($data)->replaceLast('000000', '|')->explode('|'))
-            ->map(fn ($data) => trim(utf8_encode(hex2bin($data))));
+            ->map(fn ($data) => trim(utf8_encode(hex2binary($data))));
 
         if ($message->first() === $this->screenName()) {
             return;
@@ -63,7 +63,7 @@ class HandleChatPacket
 
     private function parseEntrance(Packet $packet): void
     {
-        with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+        with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             Cache::put('room_list', Cache::get('room_list')->push($screenName)->unique());
 
             $this->console->write($screenName.' has entered the room.'.PHP_EOL);
@@ -72,7 +72,7 @@ class HandleChatPacket
 
     private function parseGoodbye(Packet $packet): void
     {
-        with(hex2bin(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+        with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             Cache::put('room_list', Cache::get('room_list')->reject(fn ($name) => $name === $screenName));
 
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
