@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Actions\SendInstantMessage;
 use App\Events\QuitChat;
 use Clue\React\Stdio\Stdio;
 use Illuminate\Support\Facades\Cache;
@@ -20,12 +21,13 @@ class HandleChatCommand
         $this->set('console', $console);
         $this->set('connection', $connection);
 
-        [$command, $input] = $this->parseInput($input);
+        [$command, $input] = parseArguments($input);
 
         match ($command) {
             '/quit' => QuitChat::dispatch(),
             '/here' => $this->displayRoomList(),
             '/packet' => $this->handlePacket($input),
+            '/im' => SendInstantMessage::run($console, $connection, $input),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
     }
@@ -49,17 +51,12 @@ class HandleChatCommand
         HTML);
     }
 
-    private function handlePacket($input): void
+    private function handlePacket(string $input): void
     {
         if (strlen($input) % 2 !== 0 || ! ctype_xdigit($input)) {
             $this->console->write('Invalid packet.'.PHP_EOL);
         }
 
         $this->connection->write(hex2binary($input));
-    }
-
-    private function parseInput(string $input): array
-    {
-        return str($input)->whenContains(' ', fn ($str) => explode(' ', $str), fn ($str) => [$str->value, null]);
     }
 }

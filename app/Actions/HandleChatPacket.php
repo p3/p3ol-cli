@@ -4,10 +4,12 @@ namespace App\Actions;
 
 use App\Actions\SendDesktopNotification;
 use App\DTO\Packet;
+use App\Enums\AtomPacket;
 use Clue\React\Stdio\Stdio;
 use Illuminate\Support\Facades\Cache;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
+use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class HandleChatPacket
 {
@@ -19,12 +21,50 @@ class HandleChatPacket
         $this->set('console', $console);
 
         match ($packet->token()) {
-            'AT' => $this->parsePeopleInRoom($packet),
+            'AT' => $this->parseAtomStream($packet),
             'AB' => $this->parseRoomMessage($packet),
             'CA' => $this->parseEntrance($packet),
             'CB' => $this->parseGoodbye($packet),
             default => info($packet->hex())
         };
+    }
+
+    private function parseAtomStream(Packet $packet): void
+    {
+        match (true) {
+            str_contains($packet->hex(), AtomPacket::CHATROOM_LIST->value) => $this->parsePeopleInRoom($packet),
+            str_contains($packet->hex(), AtomPacket::INSTANT_MESSAGE->value) => $this->parseInstantMessage($packet),
+            default => null
+        };
+    }
+
+    private function parseInstantMessage(Packet $packet): void
+    {
+        [$name, $message] = with(str($packet->hex())->after(AtomPacket::INSTANT_MESSAGE->value), function ($data) {
+            $name = $data->before('3a2020')->substr(2)->value();
+            $message = $data->after('3a2020')->before(AtomPacket::INSTANT_MESSAGE_END->value)->value();
+
+            return [
+                hex2binary($name),
+                hex2binary(htmlentities($message)),
+            ];
+        });
+
+        render("\n");
+        render(<<<HTML
+            <table>
+                <thead>
+                    <tr>
+                        <th>Instant Message From: {$name}</th>
+                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>{$message}</td>
+                        </tr>
+                    </tbody>
+                </thead>
+            </table>
+        HTML);
     }
 
     private function parsePeopleInRoom(Packet $packet): void
