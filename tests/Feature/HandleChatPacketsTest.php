@@ -2,12 +2,10 @@
 
 use App\Actions\HandleChatPacket;
 use App\DTO\Packet;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Termwind\Termwind;
 
 it('can parse people that are in the chatroom', function () {
     test()->startConsole();
-    $packet = Packet::make(test()->fixture('chatroom_join_AT_packet'));
+    $packet = Packet::make(test()->fixture('chat_room.joined'));
 
     HandleChatPacket::run($this->console, $packet);
 
@@ -16,9 +14,19 @@ it('can parse people that are in the chatroom', function () {
 
 it('can parse new messages in the chatroom', function () {
     test()->startConsole();
-    $packet = Packet::make(test()->fixture('chatroom_message_AB_packet'));
+    $packet = Packet::make(test()->fixture('chat_room.message'));
 
     HandleChatPacket::run($this->console, $packet);
 
     expect($this->output)->toContain('this is just a test message');
+});
+
+it('can receive instant messages', function () {
+    test()->startConsole();
+
+    $packet = Packet::make(test()->fixture('instant_message.received'));
+
+    HandleChatPacket::run($this->console, $packet);
+
+    expect($this->output)->toContain('Howdy!');
 });

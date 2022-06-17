@@ -7,7 +7,7 @@ use App\DTO\Packet;
 use App\Enums\AtomPacket;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Stringable;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 
@@ -40,17 +40,18 @@ class HandleChatPacket
 
     private function parseInstantMessage(Packet $packet): void
     {
-        [$name, $message] = with(str($packet->hex())->after(AtomPacket::INSTANT_MESSAGE->value), function ($data) {
-            return [
-                hex2binary($data->before('3a2020')->substr(2)->value()),
-                hex2binary($data->after('3a2020')->before(AtomPacket::INSTANT_MESSAGE_END->value)->value()),
-            ];
-        });
+        [$screenName, $message] = str($packet->hex())
+            ->after(AtomPacket::INSTANT_MESSAGE->value)
+            ->before(AtomPacket::INSTANT_MESSAGE_END->value)
+            ->substr(2)
+            ->replace('3a2020', '|')
+            ->explode('|')
+            ->map(fn (string $data) => hex2binary($data));
 
-        with(new Builder, function (Builder $builder) use ($name, $message) {
+        with(new Builder, function (Builder $builder) use ($screenName, $message) {
             $builder->setTitle('New Instant Message 💌');
             $builder->addRow([
-                'Screenname' => $name,
+                'Screenname' => $screenName,
                 'Message' =>  $message,
             ]);
             $this->console->write($builder->renderTable().PHP_EOL);
@@ -61,40 +62,46 @@ class HandleChatPacket
     {
         $roomList = collect(explode('100b01010b0200011d000b01', $packet->hex()))
             ->splice(1)
-            ->map(fn ($name) => hex2binary(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
+            ->map(fn (string $name) => hex2binary(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
 
-        if (! $this->screenName()) {
-            Cache::put('screen_name', $roomList->pop());
-            $this->console->setPrompt($this->screenName().': ');
+        cache()->put('screen_name', $roomList->pop());
+        $this->console->setPrompt(cache('screen_name').': ');
 
-            Cache::put('room_list', $roomList);
-            $this->console->setAutocomplete(fn () => $roomList->map(fn ($name) => strtolower($name))->toArray());
+        cache()->put('room_list', $roomList);
+        $this->console->setAutocomplete(fn () => $roomList->map(fn ($name) => strtolower($name))->toArray());
 
-            $this->console->write($roomList->implode(', ').' are currently in this room.'.PHP_EOL);
-        }
+        $this->console->write($roomList->implode(', ').' are currently in this room.'.PHP_EOL);
     }
 
     private function parseRoomMessage(Packet $packet): void
     {
-        $message = collect(substr($packet->hex(), 20))
-            ->flatMap(fn ($data) => str($data)->replaceLast('000000', '|')->explode('|'))
-            ->map(fn ($data) => trim(utf8_encode(hex2binary($data))));
+        [$screenName, $message] = str($packet->hex())
+            ->substr(20)
+            ->whenStartsWith('4f6e6c696e65486f7374', function (Stringable $data) {
+                return $data->replace('4f6e6c696e65486f737420', '4f6e6c696e65486f73740000');
+            })
+            ->whenContains('7f4f6e6c696e65486f73743a09', function (Stringable $data) {
+                return $data->replace('7f4f6e6c696e65486f73743a09', '0a4f6e6c696e65486f73743a20');
+            })
+            ->replaceLast('0000', '|')
+            ->explode('|')
+            ->map(fn (string $data) => trim(utf8_encode(hex2binary($data))));
 
-        if ($message->first() === $this->screenName()) {
+        if ($screenName === cache('screen_name')) {
             return;
         }
 
-        if ($this->hasMention($message->last())) {
-            SendDesktopNotification::run($message->first(), $message->last());
+        if ($this->hasMention($message)) {
+            SendDesktopNotification::run($screenName, $message);
         }
 
-        $this->console->write($message->join(': ').PHP_EOL);
+        $this->console->write($screenName.': '.$message.PHP_EOL);
     }
 
     private function parseEntrance(Packet $packet): void
     {
         with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
-            Cache::put('room_list', Cache::get('room_list')->push($screenName)->unique());
+            cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
 
             $this->console->write($screenName.' has entered the room.'.PHP_EOL);
         });
@@ -103,7 +110,7 @@ class HandleChatPacket
     private function parseGoodbye(Packet $packet): void
     {
         with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
-            Cache::put('room_list', Cache::get('room_list')->reject(fn ($name) => $name === $screenName));
+            cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
 
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
         });
@@ -111,11 +118,6 @@ class HandleChatPacket
 
     private function hasMention(string $message): bool
     {
-        return preg_match("/\b{$this->screenName()}\b/i", $message);
-    }
-
-    private function screenName(): ?string
-    {
-        return Cache::get('screen_name');
+        return with(cache('screen_name'), fn ($screenName) => preg_match("/\b{$screenName}\b/i", $message));
     }
 }

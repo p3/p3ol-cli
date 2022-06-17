@@ -5,7 +5,7 @@ use App\Actions\SendInstantMessage;
 use function Clue\React\Block\sleep;
 use Tests\FakeServer;
 
-it('it can join a chatroom', function () {
+it('can send an instant message', function () {
     $server = new FakeServer();
     test()->startConsole();
 
