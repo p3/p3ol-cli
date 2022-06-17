@@ -1,7 +1,6 @@
 # 🖥 Retro AOL® CLI
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/joecampo/retro-aol-cli.svg?style=flat-square)](https://packagist.org/packages/joecampo/retro-aol-cli)
 [![GitHub Tests Action Status](https://github.com/joecampo/retro-aol-cli/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/joecampo/retro-aol-cli/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/joecampo/retro-aol-cli.svg?style=flat-square)](https://packagist.org/packages/joecampo/retro-aol-cli)
 <span class="badge-patreon"><a href="https://www.patreon.com/re_aol" title="Donate to the RE-AOL project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-green.svg" alt="Patreon donate button" /></a></span>
 
 This is an unofficial CLI version for the [RE-AOL](https://github.com/irBags/Retro-AOL-client) for MacOS & Linux.
