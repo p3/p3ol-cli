@@ -5,11 +5,11 @@ namespace App\Actions;
 use App\Actions\SendDesktopNotification;
 use App\DTO\Packet;
 use App\Enums\AtomPacket;
+use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
 use Illuminate\Support\Facades\Cache;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
-use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class HandleChatPacket
 {
@@ -41,30 +41,20 @@ class HandleChatPacket
     private function parseInstantMessage(Packet $packet): void
     {
         [$name, $message] = with(str($packet->hex())->after(AtomPacket::INSTANT_MESSAGE->value), function ($data) {
-            $name = $data->before('3a2020')->substr(2)->value();
-            $message = $data->after('3a2020')->before(AtomPacket::INSTANT_MESSAGE_END->value)->value();
-
             return [
-                hex2binary($name),
-                hex2binary(htmlentities($message)),
+                hex2binary($data->before('3a2020')->substr(2)->value()),
+                hex2binary($data->after('3a2020')->before(AtomPacket::INSTANT_MESSAGE_END->value)->value()),
             ];
         });
 
-        render("\n");
-        render(<<<HTML
-            <table>
-                <thead>
-                    <tr>
-                        <th>Instant Message From: {$name}</th>
-                    </tr>
-                    <tbody>
-                        <tr>
-                            <td>{$message}</td>
-                        </tr>
-                    </tbody>
-                </thead>
-            </table>
-        HTML);
+        with(new Builder, function (Builder $builder) use ($name, $message) {
+            $builder->setTitle('New Instant Message 💌');
+            $builder->addRow([
+                'Screenname' => $name,
+                'Message' =>  $message,
+            ]);
+            $this->console->write($builder->renderTable().PHP_EOL);
+        });
     }
 
     private function parsePeopleInRoom(Packet $packet): void
