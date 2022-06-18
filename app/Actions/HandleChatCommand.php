@@ -2,14 +2,13 @@
 
 namespace App\Actions;
 
+use App\Actions\DisplayPeopleInChat;
 use App\Actions\SendInstantMessage;
 use App\Events\QuitChat;
 use Clue\React\Stdio\Stdio;
-use Illuminate\Support\Facades\Cache;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
-use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class HandleChatCommand
 {
@@ -25,30 +24,11 @@ class HandleChatCommand
 
         match ($command) {
             '/quit' => QuitChat::dispatch(),
-            '/here' => $this->displayRoomList(),
+            '/here' => DisplayPeopleInChat::run($console),
             '/packet' => $this->handlePacket($input),
             '/im' => SendInstantMessage::run($console, $connection, $input),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
-    }
-
-    private function displayRoomList(): void
-    {
-        $roomList = Cache::get('room_list');
-
-        $screenNames = $roomList->map(fn ($screenName) => "<tr><td>{$screenName}</td></tr>")->join('');
-
-        render("\n");
-        render(<<<HTML
-            <table>
-                <thead>
-                    <tr>
-                        <th>Screenname</th>
-                    </tr>
-                </thead>
-                {$screenNames}
-            </table>
-        HTML);
     }
 
     private function handlePacket(string $input): void
