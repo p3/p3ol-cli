@@ -8,7 +8,7 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use NunoMaduro\LaravelConsoleMenu\Menu;
 use React\Socket\ConnectionInterface;
 
-class DisplayChatrooms
+class DisplayChatRooms
 {
     use AsAction;
 

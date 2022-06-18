@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\Actions\DisplayChatrooms;
+use App\Actions\DisplayChatRooms;
 use App\DTO\Packet;
 use App\Enums\ChatroomPacket;
 use App\Traits\RemoveListener;
@@ -57,7 +57,7 @@ class FetchChatrooms
             Loop::addTimer(5, function () {
                 $this->removeListener('data', $this->connection);
 
-                DisplayChatrooms::run($this->connection, $this->parseChatrooms());
+                DisplayChatRooms::run($this->connection, $this->parseChatrooms());
             });
         });
     }
