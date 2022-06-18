@@ -11,6 +11,7 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class LoginAsGuest
@@ -97,12 +98,15 @@ class LoginAsGuest
     private function initializeProgressBar()
     {
         render('<div class="px-1 bg-blue-300 text-black">🖥 &nbsp;RE-AOL CLI Edition (Alpha)</div>');
-        $this->progressBar = new ProgressBar(new \Symfony\Component\Console\Output\ConsoleOutput(), 100);
+
+        $this->progressBar = new ProgressBar(new ConsoleOutput(), 100);
+
         if ('\\' !== \DIRECTORY_SEPARATOR || 'Hyper' === getenv('TERM_PROGRAM')) {
             $this->progressBar->setEmptyBarCharacter('░');
             $this->progressBar->setProgressCharacter('');
             $this->progressBar->setBarCharacter('▓');
         }
+
         $this->progressBar->setFormat("%message%\n [%bar%] %percent:3s%%");
         $this->progressBar->setMessage('Step 1: Initializing TCP/IP ...');
         $this->progressBar->setProgress(25);
