@@ -56,9 +56,9 @@ class HandleChatPacket
                 'Message' =>  $message,
             ]);
 
-            PlaySound::run('im');
             $this->console->write($builder->renderTable().PHP_EOL);
             $this->console->write(Color::BG_BLUE.'Press the down arrow to reply'.Color::RESET.PHP_EOL);
+            PlaySound::run('im');
         });
     }
 
