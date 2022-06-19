@@ -7,6 +7,7 @@ use App\Actions\DisplayWelcome;
 use App\Actions\FetchChatRooms;
 use App\Actions\LoginAsGuest;
 use App\Actions\Logoff;
+use App\Actions\PlaySound;
 use App\Actions\StartHeartbeat;
 use App\DTO\Packet;
 use App\Events\QuitChat;

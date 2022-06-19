@@ -15,6 +15,10 @@ class PlaySound
     {
         $this->set('fileName', $fileName);
 
+        if (env('APP_ENV') === 'testing') {
+            return;
+        }
+
         match (PHP_OS_FAMILY) {
             'Darwin' => $this->playSoundWith('afplay'),
             'Linux' => $this->playSoundWith('aplay'),

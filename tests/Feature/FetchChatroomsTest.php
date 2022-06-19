@@ -6,7 +6,7 @@ use Tests\FakeServer;
 
 it('it can fetch public chatrooms', function () {
     $server = new FakeServer();
-    $fetchChatRooms = fetchChatRooms::make();
+    $fetchChatRooms = FetchChatRooms::make();
 
     $server->connect(function ($connection) use ($fetchChatRooms) {
         $fetchChatRooms->handle($connection);

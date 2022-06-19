@@ -56,6 +56,6 @@ function startConsole()
     test()->console = new Stdio(Loop::get(), $input, $output, new Readline($input, $output));
 
     $output->expects(test()->any())->method('write')->will(test()->returnCallback(function ($data) {
-        test()->output = $data;
+        test()->output .= $data;
     }));
 }
