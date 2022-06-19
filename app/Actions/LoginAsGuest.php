@@ -85,6 +85,8 @@ class LoginAsGuest
 
         $this->removeListener('data', $this->connection);
 
+        PlaySound::run('welcome');
+
         SuccessfulLogin::dispatch();
     }
 
