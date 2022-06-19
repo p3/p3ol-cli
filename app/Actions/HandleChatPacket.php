@@ -7,6 +7,7 @@ use App\DTO\Packet;
 use App\Enums\AtomPacket;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
+use Codedungeon\PHPCliColors\Color;
 use Illuminate\Support\Stringable;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
@@ -55,6 +56,7 @@ class HandleChatPacket
                 'Message' =>  $message,
             ]);
             $this->console->write($builder->renderTable().PHP_EOL);
+            $this->console->write(Color::BG_BLUE.'Press the down arrow to reply'.Color::RESET.PHP_EOL);
         });
     }
 

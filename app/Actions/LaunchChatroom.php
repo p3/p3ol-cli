@@ -41,6 +41,12 @@ class LaunchChatroom
         collect()->times(terminal()->height(), fn () =>  $this->console->write(PHP_EOL));
 
         $this->console->on('data', fn ($line) => $this->parseConsoleInput(rtrim($line, "\r\n")));
+
+        $this->console->on("\033[B", function () {
+            if (cache('last_instant_messaged')) {
+                $this->console->setInput('/im '.cache('last_instant_messaged').' ');
+            }
+        });
     }
 
     private function parseConsoleInput(string $input): void

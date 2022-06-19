@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Enums\InstantMessagePacket;
 use Clue\React\Stdio\Stdio;
+use Codedungeon\PHPCliColors\Color;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 
@@ -30,5 +31,8 @@ class SendInstantMessage
 
             $connection->write(hex2binary($packet));
         });
+
+        cache(['last_instant_messaged' => $screenName]);
+        $console->write(Color::BG_BLUE.'Message has been sent to: '.$screenName.Color::RESET.PHP_EOL);
     }
 }
