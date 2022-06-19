@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Actions\DisplayLogonMenu;
 use App\Actions\DisplayWelcome;
-use App\Actions\FetchChatrooms;
+use App\Actions\FetchChatRooms;
 use App\Actions\LoginAsGuest;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
@@ -66,7 +66,7 @@ class Start extends Command implements SignalableCommandInterface
     {
         Event::listen(SuccessfulLogin::class, function () {
             DisplayWelcome::run();
-            FetchChatrooms::run($this->connection);
+            FetchChatRooms::run($this->connection);
         });
 
         Event::listen(QuitChat::class, function (QuitChat $event) {

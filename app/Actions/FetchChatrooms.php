@@ -13,7 +13,7 @@ use React\EventLoop\Loop;
 use React\Socket\ConnectionInterface;
 use function Termwind\{render}; //@codingStandardsIgnoreLine
 
-class FetchChatrooms
+class FetchChatRooms
 {
     use AsAction;
     use RemoveListener;
