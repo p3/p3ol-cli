@@ -68,7 +68,7 @@ class HandleChatPacket
         $this->console->setPrompt(cache('screen_name').': ');
 
         cache()->put('room_list', $roomList);
-        $this->console->setAutocomplete(fn () => $roomList->map(fn ($name) => strtolower($name))->toArray());
+        $this->console->setAutocomplete(fn () => $roomList->toArray());
 
         $this->console->write($roomList->implode(', ').' are currently in this room.'.PHP_EOL);
     }
@@ -102,6 +102,7 @@ class HandleChatPacket
     {
         with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
+            $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
             $this->console->write($screenName.' has entered the room.'.PHP_EOL);
         });
@@ -111,6 +112,7 @@ class HandleChatPacket
     {
         with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
             cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
+            $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
         });
