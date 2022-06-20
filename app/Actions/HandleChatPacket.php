@@ -2,9 +2,9 @@
 
 namespace App\Actions;
 
-use App\Actions\SendDesktopNotification;
 use App\DTO\Packet;
 use App\Enums\AtomPacket;
+use App\Traits\Sound;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
@@ -16,6 +16,7 @@ class HandleChatPacket
 {
     use AsAction;
     use WithAttributes;
+    use Sound;
 
     public function handle(Stdio $console, Packet $packet): void
     {
@@ -98,6 +99,8 @@ class HandleChatPacket
         if ($this->hasMention($message)) {
             SendDesktopNotification::run($screenName, $message);
         }
+
+        $this->playSoundFromText($message);
 
         $this->console->write($screenName.': '.$message.PHP_EOL);
     }

@@ -3,12 +3,14 @@
 namespace App\Actions;
 
 use App\Enums\ChatroomPacket;
+use App\Traits\Sound;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 
 class SendChatMessage
 {
     use AsAction;
+    use Sound;
 
     public function handle(ConnectionInterface $connection, string $message): void
     {
@@ -23,5 +25,7 @@ class SendChatMessage
 
             $connection->write(hex2binary($packet));
         });
+
+        $this->playSoundFromText($message);
     }
 }

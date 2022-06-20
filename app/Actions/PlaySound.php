@@ -19,6 +19,10 @@ class PlaySound
             return;
         }
 
+        if (microtime(true) - cache('sound_last_played') < 2) {
+            return;
+        }
+
         match (PHP_OS_FAMILY) {
             'Darwin' => $this->playSoundWith('afplay'),
             'Linux' => $this->playSoundWith('aplay'),
@@ -28,6 +32,8 @@ class PlaySound
 
     private function playSoundWith(string $player): void
     {
+        cache(['sound_last_played' => microtime(true)]);
+
         (new Process([$player, './resources/'.$this->fileName.'.wav']))->run();
     }
 }
