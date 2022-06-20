@@ -4,7 +4,7 @@ namespace App\Actions;
 
 use App\Actions\HandleChatCommand;
 use App\Actions\HandleChatPacket;
-use App\Actions\JoinChatroom;
+use App\Actions\JoinChat;
 use App\Actions\SendChatMessage;
 use App\DTO\Packet;
 use Clue\React\Stdio\Stdio;
@@ -13,7 +13,7 @@ use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use function Termwind\{terminal}; //@codingStandardsIgnoreLine
 
-class LaunchChatroom
+class LaunchChat
 {
     use AsAction;
     use WithAttributes;
@@ -25,7 +25,7 @@ class LaunchChatroom
         $this->set('connection', $connection);
         $this->set('roomName', $roomName);
 
-        JoinChatroom::run($connection, $roomName);
+        JoinChat::run($connection, $roomName);
 
         $this->startConsole();
 

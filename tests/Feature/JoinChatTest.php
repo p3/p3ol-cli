@@ -1,14 +1,14 @@
 <?php
 
-use App\Actions\JoinChatroom;
+use App\Actions\JoinChat;
 use function Clue\React\Block\sleep;
 use Tests\FakeServer;
 
-it('it can join a chatroom', function () {
+it('it can join a chat room', function () {
     $server = new FakeServer();
 
     $server->connect(function ($connection) {
-        JoinChatroom::run($connection, 'vb');
+        JoinChat::run($connection, 'vb');
     });
 
     sleep(.1);

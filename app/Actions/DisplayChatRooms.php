@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\Actions\LaunchChatroom;
+use App\Actions\LaunchChat;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 use NunoMaduro\LaravelConsoleMenu\Menu;
@@ -21,7 +21,7 @@ class DisplayChatRooms
                 });
 
             with($menu->disableDefaultItems()->open(), function (string $name) use ($connection) {
-                LaunchChatroom::run($connection, $name);
+                LaunchChat::run($connection, $name);
             });
         });
     }

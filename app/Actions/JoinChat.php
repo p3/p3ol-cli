@@ -6,7 +6,7 @@ use App\Enums\ChatroomPacket;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 
-class JoinChatroom
+class JoinChat
 {
     use AsAction;
 
