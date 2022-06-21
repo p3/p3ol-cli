@@ -97,7 +97,7 @@ class LoginAsGuest
         $this->state = SignOnState::NEEDS_Dd_PACKET;
     }
 
-    private function initializeProgressBar()
+    private function initializeProgressBar(): void
     {
         render('<div class="px-1 bg-blue-300 text-black">🖥 &nbsp;RE-AOL CLI Edition (Alpha)</div>');
 
