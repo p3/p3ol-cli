@@ -6,12 +6,16 @@ use App\Actions\DisplayChatRooms;
 use App\DTO\Packet;
 use App\Enums\ChatroomPacket;
 use App\Traits\RemoveListener;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
+use Rahul900Day\LaravelConsoleSpinner\Spinner;
 use React\EventLoop\Loop;
+use React\EventLoop\TimerInterface;
 use React\Socket\ConnectionInterface;
-use function Termwind\{render}; //@codingStandardsIgnoreLine
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class FetchChatRooms
 {
@@ -19,9 +23,13 @@ class FetchChatRooms
     use RemoveListener;
     use WithAttributes;
 
+    protected Spinner $spinner;
+
+    protected TimerInterface $spinnerTimer;
+
     public function handle(ConnectionInterface $connection): void
     {
-        render('<div class="px-1">💬  Fetching chatrooms...</div>');
+        $this->initializeSpinner();
 
         $this->set('packets', collect());
         $this->set('connection', $connection);
@@ -55,10 +63,24 @@ class FetchChatRooms
     {
         once(function () {
             Loop::addTimer(5, function () {
+                Loop::cancelTimer($this->spinnerTimer);
                 $this->removeListener('data', $this->connection);
 
                 DisplayChatRooms::run($this->connection, $this->parseChatrooms());
             });
+        });
+    }
+
+    private function initializeSpinner()
+    {
+        $output = new OutputStyle(new ArrayInput([]), new ConsoleOutput());
+        $this->spinner = new Spinner($output, 1000);
+
+        $this->spinner->setMessage(' Fetching chatrooms 💬 ');
+        $this->spinner->start();
+
+        $this->spinnerTimer = Loop::addPeriodicTimer(0.003, function () {
+            $this->spinner->advance();
         });
     }
 }
