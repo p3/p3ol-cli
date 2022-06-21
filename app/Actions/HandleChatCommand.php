@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Actions\DisplayPeopleInChat;
 use App\Actions\SendInstantMessage;
+use App\Actions\SendPacket;
 use App\Actions\SetChatHandle;
 use App\Actions\StopChatIdler;
 use App\Events\QuitChat;
@@ -27,21 +28,12 @@ class HandleChatCommand
         match ($command) {
             '/quit' => QuitChat::dispatch(),
             '/here' => DisplayPeopleInChat::run($console),
-            '/packet' => $this->handlePacket($input),
+            '/packet' => SendPacket::run($console, $connection, $input),
             '/im' => SendInstantMessage::run($console, $connection, $input),
             '/idle' => StartChatIdler::run($console, $connection, $input),
             '/idleoff' => StopChatIdler::run($console, $connection),
             '/handle' => SetChatHandle::run($console, $input),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
-    }
-
-    private function handlePacket(string $input): void
-    {
-        if (strlen($input) % 2 !== 0 || ! ctype_xdigit($input)) {
-            $this->console->write('Invalid packet.'.PHP_EOL);
-        }
-
-        $this->connection->write(hex2binary($input));
     }
 }
