@@ -49,11 +49,15 @@ Here is a running list of features and future features I plan to implem
 
 - `/quit` – Quits the chat and closes Retro AOL CLI
 - `/here` – Display a table of all users currently joined to chat
+- `/im {$screenName} ${message}` Send an instant message.
+- `/idle {$reason}` Start a chat idler with your specified reason
+- `/idleoff` Stop your chat idler
+- `/handle` Set your handle (you will receive notifications when your handle is mentioned)
 
 #### Feature Pipeline
 - [ ] Screen name authentication
 - [ ] Creating public/private chatrooms
-- [ ] Sending/receiving instant messages (IMs)
+- [x] Sending/receiving instant messages (IMs)
 
 
 ## Support
