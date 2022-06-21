@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Actions\DisplayPeopleInChat;
 use App\Actions\SendInstantMessage;
+use App\Actions\SetChatHandle;
 use App\Actions\StopChatIdler;
 use App\Events\QuitChat;
 use Clue\React\Stdio\Stdio;
@@ -30,6 +31,7 @@ class HandleChatCommand
             '/im' => SendInstantMessage::run($console, $connection, $input),
             '/idle' => StartChatIdler::run($console, $connection, $input),
             '/idleoff' => StopChatIdler::run($console, $connection),
+            '/handle' => SetChatHandle::run($console, $input),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
     }

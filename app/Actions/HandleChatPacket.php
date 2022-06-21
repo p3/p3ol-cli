@@ -96,11 +96,13 @@ class HandleChatPacket
             return;
         }
 
+        $this->playSoundFromText($message);
+
         if ($this->hasMention($message)) {
             SendDesktopNotification::run($screenName, $message);
-        }
 
-        $this->playSoundFromText($message);
+            $message = $this->highlightMention($message);
+        }
 
         $this->console->write($screenName.': '.$message.PHP_EOL);
     }
@@ -127,6 +129,22 @@ class HandleChatPacket
 
     private function hasMention(string $message): bool
     {
-        return with(cache('screen_name'), fn ($screenName) => preg_match("/\b{$screenName}\b/i", $message));
+        return count($this->mentions($message)) > 0;
+    }
+
+    private function mentions(string $message): array
+    {
+        $input = implode('|', [cache('screen_name'), cache('chat_handle')]);
+
+        return with(preg_match_all("/\b{$input}\b/i", $message, $matches), function () use ($matches) {
+            return collect($matches[0])->filter()->unique()->toArray();
+        });
+    }
+
+    private function highlightMention(string $message): string
+    {
+        return with(implode('|', $this->mentions($message)), function ($input) use ($message) {
+            return preg_replace("/\b{$input}\b/i", Color::BG_GREEN.'$0'.Color::RESET, $message);
+        });
     }
 }

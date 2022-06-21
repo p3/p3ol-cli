@@ -19,7 +19,7 @@ class StartChatIdler
 
     protected string $ascii = '`v-[...]- cli idle - ';
 
-    public function handle(Stdio $console, ConnectionInterface $connection, string $reason): void
+    public function handle(Stdio $console, ConnectionInterface $connection, ?string $reason): void
     {
         $this->set('console', $console);
         $this->set('connection', $connection);
