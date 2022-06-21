@@ -31,6 +31,7 @@ it('can highlight messages mentioning screen name in the chat room', function ()
 
     expect($this->output)->toContain("\e[42mtest\e[0m");
 });
+
 it('can highlight messages mentioning handle in the chat room', function () {
     test()->startConsole();
     cache(['chat_handle' => 'just']);
