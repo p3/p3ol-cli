@@ -1,7 +1,7 @@
 <?php
 
 use App\Actions\HandleChatPacket;
-use App\DTO\Packet;
+use App\Helpers\Packet;
 
 it('can parse people that are in the chat room', function () {
     test()->startConsole();

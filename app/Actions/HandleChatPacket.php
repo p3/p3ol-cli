@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\DTO\Packet;
+use App\Helpers\Packet;
 use App\Enums\AtomPacket;
 use App\Traits\Sound;
 use AsciiTable\Builder;
@@ -27,22 +27,22 @@ class HandleChatPacket
             'AB' => $this->parseRoomMessage($packet),
             'CA' => $this->parseEntrance($packet),
             'CB' => $this->parseGoodbye($packet),
-            default => info($packet->hex())
+            default => info($packet->toHex())
         };
     }
 
     private function parseAtomStream(Packet $packet): void
     {
         match (true) {
-            str_contains($packet->hex(), AtomPacket::CHATROOM_LIST->value) => $this->parsePeopleInRoom($packet),
-            str_contains($packet->hex(), AtomPacket::INSTANT_MESSAGE->value) => $this->parseInstantMessage($packet),
+            str_contains($packet->toHex(), AtomPacket::CHATROOM_LIST->value) => $this->parsePeopleInRoom($packet),
+            str_contains($packet->toHex(), AtomPacket::INSTANT_MESSAGE->value) => $this->parseInstantMessage($packet),
             default => null
         };
     }
 
     private function parseInstantMessage(Packet $packet): void
     {
-        [$screenName, $message] = str($packet->hex())
+        [$screenName, $message] = str($packet->toHex())
             ->after(AtomPacket::INSTANT_MESSAGE->value)
             ->before(AtomPacket::INSTANT_MESSAGE_END->value)
             ->substr(2)
@@ -65,7 +65,7 @@ class HandleChatPacket
 
     private function parsePeopleInRoom(Packet $packet): void
     {
-        $roomList = collect(explode('100b01010b0200011d000b01', $packet->hex()))
+        $roomList = collect(explode('100b01010b0200011d000b01', $packet->toHex()))
             ->splice(1)
             ->map(fn (string $name) => hex2binary(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
 
@@ -80,7 +80,7 @@ class HandleChatPacket
 
     private function parseRoomMessage(Packet $packet): void
     {
-        [$screenName, $message] = str($packet->hex())
+        [$screenName, $message] = str($packet->toHex())
             ->substr(20)
             ->whenStartsWith('4f6e6c696e65486f7374', function (Stringable $data) {
                 return $data->replace('4f6e6c696e65486f737420', '4f6e6c696e65486f73740000');
@@ -109,7 +109,7 @@ class HandleChatPacket
 
     private function parseEntrance(Packet $packet): void
     {
-        with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+        with(hex2binary(substr($packet->toHex(), 22, strlen($packet->toHex()) - 24)), function ($screenName) {
             cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
@@ -119,7 +119,7 @@ class HandleChatPacket
 
     private function parseGoodbye(Packet $packet): void
     {
-        with(hex2binary(substr($packet->hex(), 22, strlen($packet->hex()) - 24)), function ($screenName) {
+        with(hex2binary(substr($packet->toHex(), 22, strlen($packet->toHex()) - 24)), function ($screenName) {
             cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 

@@ -16,6 +16,6 @@ class SendPacket
             $console->write('Invalid packet.'.PHP_EOL);
         }
 
-        $connection->write(hex2binary($packet));
+        $connection->write(Packet::make($packet)->prepare());
     }
 }

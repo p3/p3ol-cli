@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Helpers\Packet;
 use App\Enums\InstantMessagePacket;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
@@ -29,7 +30,7 @@ class SendInstantMessage
 
             $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
 
-            $connection->write(hex2binary($packet));
+            $connection->write(Packet::make($packet)->prepare());
         });
 
         cache(['last_instant_messaged' => $screenName]);

@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Actions\DisplayChatRooms;
-use App\DTO\Packet;
-use App\Enums\ChatroomPacket;
+use App\Helpers\Packet;
+use App\Enums\ChatPacket;
 use App\Traits\RemoveListener;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
@@ -29,12 +29,13 @@ class FetchChatRooms
 
     public function handle(ConnectionInterface $connection): void
     {
-        $this->initializeSpinner();
-
         $this->set('packets', collect());
         $this->set('connection', $connection);
+        $this->set('console', new ConsoleOutput());
 
-        $connection->write(hex2binary(ChatroomPacket::CJ_PACKET->value));
+        $this->initializeSpinner();
+
+        $connection->write(Packet::make(ChatPacket::CJ_PACKET->value)->prepare());
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
@@ -49,8 +50,8 @@ class FetchChatRooms
     private function parseChatrooms(): Collection
     {
         return $this->packets
-            ->filter(fn (Packet $packet) => str_contains($packet->hex(), '0001000109032000620f13020102010a010101'))
-            ->map(fn (Packet $packet) => substr($packet->hex(), 66))
+            ->filter(fn (Packet $packet) => str_contains($packet->toHex(), '0001000109032000620f13020102010a010101'))
+            ->map(fn (Packet $packet) => substr($packet->toHex(), 66))
             ->flatMap(function ($hex) {
                 preg_match_all('/06(\d{2,4})09(.*?)100b/', $hex, $output);
 
@@ -65,18 +66,20 @@ class FetchChatRooms
             Loop::addTimer(5, function () {
                 Loop::cancelTimer($this->spinnerTimer);
                 $this->removeListener('data', $this->connection);
+                $this->console->write("\033[?25h");
 
                 DisplayChatRooms::run($this->connection, $this->parseChatrooms());
             });
         });
     }
 
-    private function initializeSpinner()
+    private function initializeSpinner(): void
     {
-        $output = new OutputStyle(new ArrayInput([]), new ConsoleOutput());
+        $output = new OutputStyle(new ArrayInput([]), $this->console);
         $this->spinner = new Spinner($output, 1000);
 
-        $this->spinner->setMessage(' Fetching chatrooms 💬 ');
+        $this->console->write("\033[?25l");
+        $this->spinner->setMessage('Fetching chatrooms 💬');
         $this->spinner->start();
 
         $this->spinnerTimer = Loop::addPeriodicTimer(0.003, function () {

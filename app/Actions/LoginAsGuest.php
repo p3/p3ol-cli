@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\DTO\Packet;
+use App\Helpers\Packet;
 use App\Enums\AuthPacket;
 use App\Enums\SignOnState;
 use App\Events\SuccessfulLogin;
@@ -40,18 +40,18 @@ class LoginAsGuest
             $this->needsDdPacket($packet) => $this->sendDdPacket(),
             $this->needsScPacket($packet) => $this->sendScPacket(),
             $this->confirmAuth($packet) => $this->successfulLogin(),
-            default => info($packet->hex())
+            default => info($packet->toHex())
         };
     }
 
     private function needsDdPacket(Packet $packet): bool
     {
-        return $this->state === SignOnState::NEEDS_Dd_PACKET && $packet->hex() === '5ab71100037f7f240d';
+        return $this->state === SignOnState::NEEDS_Dd_PACKET && $packet->toHex() === '5ab71100037f7f240d';
     }
 
     private function sendDdPacket(): void
     {
-        $this->connection->write(hex2binary(AuthPacket::Dd_PACKET->value));
+        $this->connection->write(Packet::make(AuthPacket::Dd_PACKET->value)->prepare());
 
         $this->updateProgressBar('Step 2: Shaking hands ...', 50);
 
@@ -60,12 +60,12 @@ class LoginAsGuest
 
     private function needsScPacket(Packet $packet): bool
     {
-        return $this->state === SignOnState::NEEDS_SC_PACKET && str_contains($packet->hex(), '5343');
+        return $this->state === SignOnState::NEEDS_SC_PACKET && str_contains($packet->toHex(), '5343');
     }
 
     private function sendScPacket(): void
     {
-        $this->connection->write(hex2binary(AuthPacket::SC_PACKET->value));
+        $this->connection->write(Packet::make((AuthPacket::SC_PACKET->value))->prepare());
 
         $this->updateProgressBar('Step 3: Wrapping up ...', 75);
 

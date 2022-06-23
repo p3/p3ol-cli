@@ -8,7 +8,7 @@ use App\Actions\FetchChatRooms;
 use App\Actions\LoginAsGuest;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
-use App\DTO\Packet;
+use App\Helpers\Packet;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
@@ -47,9 +47,13 @@ class Start extends Command implements SignalableCommandInterface
                 $this->connection = $connection;
 
                 $connection->on('data', function ($data) {
-                    if (! \Phar::running()) {
-                        info(Packet::make($data)->hex());
-                    }
+                    with(Packet::make($data), function (Packet $packet) {
+                        if (! \Phar::running()) {
+                            info($packet->toHex());
+                        }
+
+                        $packet->incrementSequence();
+                    });
                 });
 
                 $connection->on('close', function () {

@@ -4,50 +4,78 @@
 
 namespace Tests;
 
-use App\Enums\AuthPacket;
-use App\Enums\ChatroomPacket;
-use React\Socket\Connector;
+use App\Helpers\Packet;
 use React\Socket\SocketServer;
+use React\Socket\ConnectionInterface;
 
 class FakeServer
 {
-    public $server;
+    protected SocketServer $server;
 
-    public $lastPacket;
+    protected ConnectionInterface $connection;
+
+    public Packet $packet;
 
     public function __construct()
     {
-        $this->server = new SocketServer('127.0.0.1:5190');
+        $this->server = new SocketServer('127.0.0.1:5191');
 
         $this->server->on('connection', function ($connection) {
+            $this->connection = $connection;
             $connection->on('data', function ($data) use ($connection) {
-                $this->handleData($connection, $data);
+                $this->incrementServerSequence(Packet::make($data));
+                $this->handlePacket($data);
             });
         });
     }
 
-    public function close()
+    public function close(): void
     {
         $this->server->close();
     }
 
-    public function connect($callback)
+    public function handlePacket(string $data): void
     {
-        with(new Connector(), function ($connector) use ($callback) {
-            $connector->connect('127.0.0.1:5190')->then(function ($connection) use ($callback) {
-                $callback($connection);
-            });
+        $this->packet = Packet::make($data);
+
+        match ($this->packet->token()) {
+            'Dd' => $this->sendPacket(TestPacket::Dd_AT_PACKET->value),
+            'SC' => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
+            'Aa' => $this->sendPacket(TestPacket::AB_PACKET->value),
+            'CJ' => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
+            default => $this->sendInitAckPacket()
+        };
+    }
+
+    private function incrementServerSequence(Packet $packet): void
+    {
+        with(hexdec(substr($packet->toHex(), 12, 2)), function (int $rx) {
+            $rx === 127 ? cache(['rx_sequence' => 16]) : cache(['rx_sequence' => $rx + 1]);
         });
     }
 
-    public function handleData($connection, $data): void
+    private function sendPacket(string $packet): void
     {
-        match ($this->lastPacket = bin2hex($data)) {
-            AuthPacket::VERSION->value => $connection->write(hex2binary('5ab71100037f7f240d')),
-            AuthPacket::Dd_PACKET->value => $connection->write(hex2binary('5a5343')),
-            AuthPacket::SC_PACKET->value => $connection->write('Welcome'),
-            ChatroomPacket::CJ_PACKET->value => $connection->write(hex2binary('5a215a00b1161220415400180001000109032000620f13020102010a010101000a06300964656164656e64100b010101020001000b0631340957656c636f6d65100b010301020001001006300954686520382d62697420477579100b010401020001000e06300954656368204c696e6b6564100b01050102000100110630094e6f7374616c676961204e657264100b01060102000100070630094e657773100b0107010200011100011d0000070101000701020012000d')),
-            default => ''
-        };
+        $this->connection->write(hex2bin($this->sequence($packet)));
+    }
+
+    private function sendInitAckPacket(): void
+    {
+        $this->connection->write(hex2bin(TestPacket::INIT_ACK_PACKET->value));
+    }
+
+    private function sequence(string $packet): string
+    {
+        return substr_replace($packet, dechex($this->rx()).dechex($this->tx()), 10, 4);
+    }
+
+    private function rx(): int
+    {
+        return cache('rx_sequence', 127);
+    }
+
+    private function tx(): int
+    {
+        return cache('tx_sequence', 127);
     }
 }
