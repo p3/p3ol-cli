@@ -28,6 +28,7 @@ class HandleChatCommand
             '/idle' => StartChatIdler::run($console, $connection, $input),
             '/idleoff' => StopChatIdler::run($console, $connection),
             '/handle' => SetChatHandle::run($console, $input),
+            '/uptime' => DisplayUptime::run($console, $connection),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
     }

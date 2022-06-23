@@ -21,7 +21,7 @@ use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 class Start extends Command implements SignalableCommandInterface
 {
-    const HOST = 'americaonline.reaol.org:5190';
+    public const HOST = 'americaonline.reaol.org:5190';
 
     protected ConnectionInterface $connection;
 
@@ -45,6 +45,7 @@ class Start extends Command implements SignalableCommandInterface
         with(new Connector(), function (Connector $connector) {
             $connector->connect(self::HOST)->then(function (ConnectionInterface $connection) {
                 $this->connection = $connection;
+                cache(['start_time' => microtime(true)]);
 
                 $connection->on('data', function ($data) {
                     with(Packet::make($data), function (Packet $packet) {
