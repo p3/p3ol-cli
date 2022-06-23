@@ -22,7 +22,7 @@ class FakeServer
 
         $this->server->on('connection', function ($connection) {
             $this->connection = $connection;
-            $connection->on('data', function ($data) use ($connection) {
+            $connection->on('data', function ($data) {
                 $this->incrementServerSequence(Packet::make($data));
                 $this->handlePacket($data);
             });
