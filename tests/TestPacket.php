@@ -1,5 +1,7 @@
 <?php
+
 //@codingStandardsIgnoreStart
+
 namespace Tests;
 
 enum TestPacket: string

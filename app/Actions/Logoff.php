@@ -2,9 +2,8 @@
 
 namespace App\Actions;
 
-use App\Actions\PlaySound;
-use App\Helpers\Packet;
 use App\Enums\AuthPacket;
+use App\Helpers\Packet;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 

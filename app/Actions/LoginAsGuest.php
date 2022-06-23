@@ -2,10 +2,10 @@
 
 namespace App\Actions;
 
-use App\Helpers\Packet;
 use App\Enums\AuthPacket;
 use App\Enums\SignOnState;
 use App\Events\SuccessfulLogin;
+use App\Helpers\Packet;
 use App\Traits\RemoveListener;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;

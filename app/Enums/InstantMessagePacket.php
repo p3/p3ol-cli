@@ -1,5 +1,7 @@
 <?php
+
 //@codingStandardsIgnoreStart
+
 namespace App\Enums;
 
 enum InstantMessagePacket: string

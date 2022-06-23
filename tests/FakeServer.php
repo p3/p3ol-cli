@@ -5,8 +5,8 @@
 namespace Tests;
 
 use App\Helpers\Packet;
-use React\Socket\SocketServer;
 use React\Socket\ConnectionInterface;
+use React\Socket\SocketServer;
 
 class FakeServer
 {

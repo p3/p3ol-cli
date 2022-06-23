@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Actions\LaunchChat;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 use NunoMaduro\LaravelConsoleMenu\Menu;

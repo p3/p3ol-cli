@@ -27,7 +27,6 @@ it('can sequence the tx byte of packets', function () {
             default => expect($result['index'])->toBe($result['txSequence'])
         };
 
-
         match ($result['index']) {
             15 => null,
             16 => expect(substr($result['lastPacket'], 12, 2))->toBe('7f'),

@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Helpers\Packet;
 use App\Enums\AtomPacket;
+use App\Helpers\Packet;
 use App\Traits\Sound;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;

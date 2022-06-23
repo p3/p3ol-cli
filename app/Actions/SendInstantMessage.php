@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Helpers\Packet;
 use App\Enums\InstantMessagePacket;
+use App\Helpers\Packet;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
 use Lorisleiva\Actions\Concerns\AsAction;

@@ -18,9 +18,6 @@ uses()
     })
     ->in('Feature');
 
-
-
-
 function fixture($name)
 {
     return hex2binary(file_get_contents(__DIR__.'/Feature/fixtures/'.$name.'.txt'));

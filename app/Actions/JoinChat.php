@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Helpers\Packet;
 use App\Enums\ChatPacket;
+use App\Helpers\Packet;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 

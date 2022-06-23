@@ -2,9 +2,8 @@
 
 namespace App\Actions;
 
-use App\Actions\DisplayChatRooms;
-use App\Helpers\Packet;
 use App\Enums\ChatPacket;
+use App\Helpers\Packet;
 use App\Traits\RemoveListener;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;

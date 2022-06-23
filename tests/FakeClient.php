@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use React\Socket\ConnectionInterface;
 use App\Helpers\Packet;
+use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 
 class FakeClient

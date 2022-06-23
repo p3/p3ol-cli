@@ -2,11 +2,6 @@
 
 namespace App\Actions;
 
-use App\Actions\DisplayPeopleInChat;
-use App\Actions\SendInstantMessage;
-use App\Actions\SendPacket;
-use App\Actions\SetChatHandle;
-use App\Actions\StopChatIdler;
 use App\Events\QuitChat;
 use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;

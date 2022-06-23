@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Actions\SendChatMessage;
 use Carbon\CarbonInterface;
 use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;
