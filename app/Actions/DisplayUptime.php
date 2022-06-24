@@ -2,9 +2,9 @@
 
 namespace App\Actions;
 
+use Carbon\CarbonInterface;
 use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Carbon\CarbonInterface;
 use React\Socket\ConnectionInterface;
 
 class DisplayUptime
