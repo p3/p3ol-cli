@@ -16,7 +16,11 @@ class DisplayPeopleInChat
             return;
         }
 
-        with(new Builder, function (Builder $builder) use ($console) {
+        if (cache('room_list')->count() === 0) {
+            $this->console->write(Color::BG_BLUE.'There are currently no other users here.'.Color::RESET.PHP_EOL);
+        }
+
+        with(new Builder(), function (Builder $builder) use ($console) {
             $builder->setTitle('People in Room:');
             $builder->addRows(
                 cache('room_list')->map(fn ($screenName) => ['Screen Name' => $screenName])->toArray()
