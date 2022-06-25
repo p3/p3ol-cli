@@ -48,6 +48,8 @@ class LaunchChat
     private function parseConsoleInput(string $input): void
     {
         match (true) {
+            substr($input, 0, 6) === '//roll' => SendChatMessage::run($this->connection, $input),
+            substr($input, 0, 7) === '//8ball' => SendChatMessage::run($this->connection, $input),
             substr($input, 0, 1) === '/' => HandleChatCommand::run($this->console, $this->connection, $input),
             default => SendChatMessage::run($this->connection, $input),
         };
