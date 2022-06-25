@@ -1,8 +1,8 @@
 <?php
 
 use App\Actions\FetchChatRooms;
-use function Clue\React\Block\sleep;
 use React\Socket\ConnectionInterface;
+use function Clue\React\Block\sleep;
 
 it('it can fetch public chatrooms', function () {
     $fetchChatRooms = FetchChatRooms::make();
@@ -15,7 +15,7 @@ it('it can fetch public chatrooms', function () {
 
     expect(invade($fetchChatRooms)->parseChatrooms()->toArray())->toBe([
         ['people' => 0, 'name' => 'deadend'],
-        ['people' => 14, 'name' => 'Welcome'],
+        ['people' => 7, 'name' => 'Welcome'],
         ['people' => 0, 'name' => 'The 8-bit Guy'],
         ['people' => 0, 'name' => 'Tech Linked'],
         ['people' => 0, 'name' => 'Nostalgia Nerd'],

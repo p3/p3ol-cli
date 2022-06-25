@@ -50,7 +50,7 @@ class HandleChatPacket
             ->explode('|')
             ->map(fn (string $data) => hex2binary($data));
 
-        with(new Builder, function (Builder $builder) use ($screenName, $message) {
+        with(new Builder(), function (Builder $builder) use ($screenName, $message) {
             $builder->setTitle('New Instant Message 💌');
             $builder->addRow([
                 'Screenname' => $screenName,
@@ -65,9 +65,12 @@ class HandleChatPacket
 
     private function parsePeopleInRoom(Packet $packet): void
     {
-        $roomList = collect(explode('100b01010b0200011d000b01', $packet->toHex()))
-            ->splice(1)
-            ->map(fn (string $name) => hex2binary(substr($name, 2, hexdec(substr($name, 0, 2)) * 2)));
+        $roomList = str($packet->toHex())
+            ->substr(268)
+            ->explode('100b01')
+            ->slice(0, -1)
+            ->map(fn ($packet) => substr($packet, 22))
+            ->map(fn (string $name) => hex2binary(substr($name, 0, hexdec(substr($name, 0, 2)) * 2)));
 
         cache()->put('screen_name', $roomList->pop());
         $this->console->setPrompt(cache('screen_name').': ');
@@ -89,6 +92,7 @@ class HandleChatPacket
                 return $data->replace('7f4f6e6c696e65486f73743a09', '0a4f6e6c696e65486f73743a20');
             })
             ->replaceLast('0000', '|')
+            ->replaceMatches('/0d(.*?)0d$/', '')
             ->explode('|')
             ->map(fn (string $data) => trim(utf8_encode(hex2binary($data))));
 
@@ -109,7 +113,7 @@ class HandleChatPacket
 
     private function parseEntrance(Packet $packet): void
     {
-        with(hex2binary(substr($packet->toHex(), 22, strlen($packet->toHex()) - 24)), function ($screenName) {
+        with($this->parseScreenNameFromEntranceorExit($packet), function ($screenName) {
             cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
@@ -119,11 +123,18 @@ class HandleChatPacket
 
     private function parseGoodbye(Packet $packet): void
     {
-        with(hex2binary(substr($packet->toHex(), 22, strlen($packet->toHex()) - 24)), function ($screenName) {
+        with($this->parseScreenNameFromEntranceorExit($packet), function ($screenName) {
             cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
+        });
+    }
+
+    private function parseScreenNameFromEntranceorExit(Packet $packet): string
+    {
+        return with($packet->toHex(), function (string $packet) {
+            return hex2binary(str($packet)->replaceMatches('/0d(.*?)0d$/', '')->substr(22, strlen($packet) - 24));
         });
     }
 

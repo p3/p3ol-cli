@@ -9,7 +9,7 @@ it('can parse people that are in the chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain('GuestUUN, x0r, phantasm, Jason, GuestNQG, GuestNAF, ill, GuestPAO, GuestVR4, Tox, Wubbking, GuestMAS are currently in this room.');
+    expect($this->output)->toContain('reaol, Shaolin, TommyD, Zip, GameHost, Godly, punk, Guest53 are currently in this room.');
 });
 
 it('can parse new messages in the chat room', function () {
@@ -40,6 +40,26 @@ it('can highlight messages mentioning handle in the chat room', function () {
     HandleChatPacket::run($this->console, $packet);
 
     expect($this->output)->toContain("\e[42mjust\e[0m");
+});
+
+it('can parse exit of a user to chat room', function () {
+    test()->startConsole();
+    cache(['room_list' => collect()]);
+    $packet = Packet::make(test()->fixture('chat_room.exit'));
+
+    HandleChatPacket::run($this->console, $packet);
+
+    expect($this->output)->toContain("GuestBXB has left the room.");
+});
+
+it('can parse entrance of a user to chat room', function () {
+    test()->startConsole();
+    cache(['room_list' => collect()]);
+    $packet = Packet::make(test()->fixture('chat_room.entrance'));
+
+    HandleChatPacket::run($this->console, $packet);
+
+    expect($this->output)->toContain("GuestBXB has entered the room.");
 });
 
 it('can receive instant messages', function () {

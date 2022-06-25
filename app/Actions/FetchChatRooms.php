@@ -52,7 +52,7 @@ class FetchChatRooms
             ->filter(fn (Packet $packet) => str_contains($packet->toHex(), '0001000109032000620f13020102010a010101'))
             ->map(fn (Packet $packet) => substr($packet->toHex(), 66))
             ->flatMap(function ($hex) {
-                preg_match_all('/06(\d{2,4})09(.*?)100b/', $hex, $output);
+                preg_match_all('/06(\d{2,4})09(.*?)0202010201020001/', $hex, $output);
 
                 return collect($output[1])->zip($output[2])->toArray();
             })
