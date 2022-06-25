@@ -134,7 +134,7 @@ class HandleChatPacket
     private function parseScreenNameFromEntranceorExit(Packet $packet): string
     {
         return with($packet->toHex(), function (string $packet) {
-            return hex2binary(str($packet)->replaceMatches('/0d(.*?)0d$/', '')->substr(22, strlen($packet) - 24));
+            return hex2binary(str($packet)->substr(22, strlen($packet) - 22)->replaceMatches('/0d(.*?)0d$/', ''));
         });
     }
 

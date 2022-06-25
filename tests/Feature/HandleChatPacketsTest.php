@@ -59,7 +59,7 @@ it('can parse entrance of a user to chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain("GuestBXB has entered the room.");
+    expect($this->output)->toContain("GuestSI has entered the room.");
 });
 
 it('can receive instant messages', function () {
