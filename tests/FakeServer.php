@@ -14,6 +14,8 @@ class FakeServer
 
     protected ConnectionInterface $connection;
 
+    public bool $returnInvalidLogin = false;
+
     public Packet $packet;
 
     public function __construct()
@@ -39,7 +41,7 @@ class FakeServer
         $this->packet = Packet::make($data);
 
         match ($this->packet->token()) {
-            'Dd' => $this->sendPacket(TestPacket::Dd_AT_PACKET->value),
+            'Dd' => $this->sendDdPacket(),
             'SC' => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
             'Aa' => $this->sendPacket(TestPacket::AB_PACKET->value),
             'CJ' => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
@@ -62,6 +64,14 @@ class FakeServer
     private function sendInitAckPacket(): void
     {
         $this->connection->write(hex2bin(TestPacket::INIT_ACK_PACKET->value));
+    }
+
+    private function sendDdPacket(): void
+    {
+        match ($this->returnInvalidLogin) {
+            true => $this->sendPacket(TestPacket::Dd_INVALID_AT_PACKET->value),
+            default => $this->sendPacket(TestPacket::Dd_AT_PACKET->value)
+        };
     }
 
     private function sequence(string $packet): string

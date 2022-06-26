@@ -12,9 +12,10 @@ use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use App\Events\InvalidLogin;
 use function Termwind\{render}; //@codingStandardsIgnoreLine
 
-class LoginAsGuest
+class Login
 {
     use AsAction;
     use RemoveListener;
@@ -24,9 +25,10 @@ class LoginAsGuest
 
     protected SignOnState $state = SignOnState::OFFLINE;
 
-    public function handle(ConnectionInterface $connection): void
+    public function handle(ConnectionInterface $connection, array $credentials): void
     {
         $this->set('connection', $connection);
+        $this->set('credentials', $credentials);
 
         $this->initializeProgressBar();
         $this->sendVersionPacket();
@@ -39,7 +41,8 @@ class LoginAsGuest
         match (true) {
             $this->needsDdPacket($packet) => $this->sendDdPacket(),
             $this->needsScPacket($packet) => $this->sendScPacket(),
-            $this->confirmAuth($packet) => $this->successfulLogin(),
+            $this->hasInvalidLogin($packet) => $this->handleInvalidLogin(),
+            $this->hasSuccessfulLogin($packet) => $this->handleSuccessfulLogin(),
             default => info($packet->toHex())
         };
     }
@@ -51,11 +54,32 @@ class LoginAsGuest
 
     private function sendDdPacket(): void
     {
-        $this->connection->write(Packet::make(AuthPacket::Dd_PACKET->value)->prepare());
+        with([$screenName, $password] = $this->credentials, function () use ($screenName, $password) {
+            match ($screenName) {
+                'guest' => $this->sendGuestDdPacket(),
+                default => $this->sendAuthDdPacket($screenName, $password),
+            };
+        });
 
         $this->updateProgressBar('Step 2: Shaking hands ...', 50);
 
         $this->state = SignOnState::NEEDS_SC_PACKET;
+    }
+
+    private function sendGuestDdPacket(): void
+    {
+        $this->connection->write(Packet::make(AuthPacket::Dd_GUEST_PACKET->value)->prepare());
+    }
+
+    private function sendAuthDdPacket(string $screenName, string $password): void
+    {
+        with(AuthPacket::Dd_AUTH_PACKET->value, function ($packet) use ($screenName, $password) {
+            $packet = str_replace('{screenName}', bin2hex($screenName), $packet);
+            $packet = str_replace('{password}', bin2hex($password), $packet);
+            $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
+
+            $this->connection->write(Packet::make($packet)->prepare());
+        });
     }
 
     private function needsScPacket(Packet $packet): bool
@@ -72,12 +96,21 @@ class LoginAsGuest
         $this->state = SignOnState::AWAITING_WELCOME;
     }
 
-    private function confirmAuth(Packet $packet): bool
+    private function hasSuccessfulLogin(Packet $packet): bool
     {
         return $this->state === SignOnState::AWAITING_WELCOME && str_contains($packet->data, 'Welcome');
     }
 
-    private function successfulLogin(): void
+    private function hasInvalidLogin(Packet $packet): bool
+    {
+        info($this->state === SignOnState::NEEDS_SC_PACKET
+        && (str_contains($packet->data, 'incorrect!') || str_contains($packet->data, 'login-000002')));
+
+        return $this->state === SignOnState::NEEDS_SC_PACKET
+            && (str_contains($packet->data, 'incorrect!') || str_contains($packet->data, 'login-000002'));
+    }
+
+    private function handleSuccessfulLogin(): void
     {
         $this->state = SignOnState::ONLINE;
 
@@ -90,9 +123,16 @@ class LoginAsGuest
         SuccessfulLogin::dispatch();
     }
 
+    private function handleInvalidLogin(): void
+    {
+        $this->removeListener('data', $this->connection);
+
+        InvalidLogin::dispatch();
+    }
+
     protected function sendVersionPacket(): void
     {
-        $this->connection->write(hex2binary(AuthPacket::VERSION->value));
+        $this->connection->write(hex2binary(AuthPacket::VERSION_PACKET->value));
 
         $this->state = SignOnState::NEEDS_Dd_PACKET;
     }

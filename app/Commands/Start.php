@@ -5,9 +5,10 @@ namespace App\Commands;
 use App\Actions\DisplayLogonMenu;
 use App\Actions\DisplayWelcome;
 use App\Actions\FetchChatRooms;
-use App\Actions\LoginAsGuest;
+use App\Actions\Login;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
+use App\Enums\SignOnState;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
@@ -18,6 +19,7 @@ use React\EventLoop\Loop;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
+use App\Events\InvalidLogin;
 
 class Start extends Command implements SignalableCommandInterface
 {
@@ -29,9 +31,13 @@ class Start extends Command implements SignalableCommandInterface
 
     protected $description = 'Start the RE-AOL CLI client';
 
+    protected SignOnState $state = SignOnState::OFFLINE;
+
+    protected array $credentials;
+
     public function handle()
     {
-        DisplayLogonMenu::run();
+        $this->credentials = DisplayLogonMenu::run($this->state);
 
         $this->registerEventListeners();
 
@@ -58,10 +64,12 @@ class Start extends Command implements SignalableCommandInterface
                 });
 
                 $connection->on('close', function () {
-                    StopHeartbeat::dispatch();
+                    if ($this->state === SignOnState::ONLINE) {
+                        StopHeartbeat::dispatch();
+                    }
                 });
 
-                LoginAsGuest::run($connection);
+                Login::run($connection, $this->credentials);
                 StartHeartbeat::run($connection);
             });
         });
@@ -70,8 +78,15 @@ class Start extends Command implements SignalableCommandInterface
     private function registerEventListeners()
     {
         Event::listen(SuccessfulLogin::class, function () {
+            $this->state = SignOnState::ONLINE;
             DisplayWelcome::run();
             FetchChatRooms::run($this->connection);
+        });
+
+        Event::listen(InvalidLogin::class, function () {
+            $this->state = SignOnState::INVALID;
+
+            $this->handle();
         });
 
         Event::listen(QuitChat::class, function (QuitChat $event) {
