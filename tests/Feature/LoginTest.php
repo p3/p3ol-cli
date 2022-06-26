@@ -1,10 +1,10 @@
 <?php
 
 use App\Actions\Login;
-use App\Events\SuccessfulLogin;
-use Illuminate\Support\Facades\Event;
 use App\Events\InvalidLogin;
+use App\Events\SuccessfulLogin;
 use function Clue\React\Block\sleep;
+use Illuminate\Support\Facades\Event;
 
 it('can sign on as a guest', function () {
     Event::fake();

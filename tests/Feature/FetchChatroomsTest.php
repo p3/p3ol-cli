@@ -1,8 +1,8 @@
 <?php
 
 use App\Actions\FetchChatRooms;
-use React\Socket\ConnectionInterface;
 use function Clue\React\Block\sleep;
+use React\Socket\ConnectionInterface;
 
 it('it can fetch public chatrooms', function () {
     $fetchChatRooms = FetchChatRooms::make();

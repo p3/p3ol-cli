@@ -9,6 +9,7 @@ use App\Actions\Login;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
 use App\Enums\SignOnState;
+use App\Events\InvalidLogin;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
@@ -19,7 +20,6 @@ use React\EventLoop\Loop;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
-use App\Events\InvalidLogin;
 
 class Start extends Command implements SignalableCommandInterface
 {

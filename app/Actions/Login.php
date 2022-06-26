@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Enums\AuthPacket;
 use App\Enums\SignOnState;
+use App\Events\InvalidLogin;
 use App\Events\SuccessfulLogin;
 use App\Helpers\Packet;
 use App\Traits\RemoveListener;
@@ -12,7 +13,6 @@ use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use App\Events\InvalidLogin;
 use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class Login
@@ -103,9 +103,6 @@ class Login
 
     private function hasInvalidLogin(Packet $packet): bool
     {
-        info($this->state === SignOnState::NEEDS_SC_PACKET
-        && (str_contains($packet->data, 'incorrect!') || str_contains($packet->data, 'login-000002')));
-
         return $this->state === SignOnState::NEEDS_SC_PACKET
             && (str_contains($packet->data, 'incorrect!') || str_contains($packet->data, 'login-000002'));
     }

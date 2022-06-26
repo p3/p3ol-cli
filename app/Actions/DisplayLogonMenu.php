@@ -3,12 +3,12 @@
 namespace App\Actions;
 
 use App\Enums\SignOnState;
+use Codedungeon\PHPCliColors\Color;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use NunoMaduro\LaravelConsoleMenu\Menu;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\MenuStyle;
-use Codedungeon\PHPCliColors\Color;
 use function Termwind\{ask}; //@codingStandardsIgnoreLine
 use function Termwind\{render}; //@codingStandardsIgnoreLine
 
@@ -33,7 +33,7 @@ class DisplayLogonMenu
         return with(new Menu('Sign on'), function (Menu $menu) {
             if ($this->state === SignOnState::INVALID) {
                 //@codingStandardsIgnoreLine
-                $menu->setTitle("Sign On\n\n".Color::BG_LIGHT_RED."The username or password you entered is incorrect!".Color::BG_BLUE);
+                $menu->setTitle("Sign On\n\n".Color::BG_LIGHT_RED.'The username or password you entered is incorrect!'.Color::BG_BLUE);
             }
 
             return $menu
@@ -56,12 +56,12 @@ class DisplayLogonMenu
                 ->fetch();
 
             $password = $cliMenu
-                    ->askPassword($style)
-                    ->setPromptText('Password')
-                    ->setPlaceholderText('password')
-                    ->setValidator(fn () => true)
-                    ->ask()
-                    ->fetch();
+                ->askPassword($style)
+                ->setPromptText('Password')
+                ->setPlaceholderText('password')
+                ->setValidator(fn () => true)
+                ->ask()
+                ->fetch();
 
             $menu->setResult([$username, $password]);
             $cliMenu->close();
