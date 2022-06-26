@@ -56,7 +56,8 @@ class FetchChatRooms
 
                 return collect($output[1])->zip($output[2])->toArray();
             })
-            ->map(fn ($value) => ['people' => intval(hex2binary($value[0])), 'name' => hex2binary($value[1])]);
+            ->map(fn ($value) => ['people' => intval(hex2binary($value[0])), 'name' => hex2binary($value[1])])
+            ->unique();
     }
 
     private function startTimer(): void
