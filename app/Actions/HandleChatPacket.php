@@ -91,8 +91,8 @@ class HandleChatPacket
             ->whenContains('7f4f6e6c696e65486f73743a09', function (Stringable $data) {
                 return $data->replace('7f4f6e6c696e65486f73743a09', '0a4f6e6c696e65486f73743a20');
             })
-            ->replaceLast('0000', '|')
             ->replaceMatches('/0d(.*?)0d$/', '')
+            ->replaceLast('0000', '|')
             ->explode('|')
             ->map(fn (string $data) => trim(utf8_encode(hex2binary($data))));
 
