@@ -2,10 +2,17 @@
 
 use App\Actions\FetchChatRooms;
 use function Clue\React\Block\sleep;
+use Illuminate\Console\OutputStyle;
 use React\Socket\ConnectionInterface;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 it('it can fetch public chatrooms', function () {
     $fetchChatRooms = FetchChatRooms::make();
+
+    app()->bind('Illuminate\Console\OutputStyle', function () {
+        return new OutputStyle(new ArrayInput([]), new BufferedOutput());
+    });
 
     $this->client->connect(function (ConnectionInterface $connection) use ($fetchChatRooms) {
         $fetchChatRooms->handle($connection);

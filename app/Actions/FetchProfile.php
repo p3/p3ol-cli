@@ -94,6 +94,10 @@ class FetchProfile
 
     private function parseBio(Packet $packet): array
     {
+        if (! $this->parsePacket($packet)->contains('7f7f')) {
+            return ['Bio' => '[None]'];
+        }
+
         return with($this->parsePacket($packet)->after('7f7f')->before('011100011d0001'), function ($bio) {
             return['Bio' => preg_replace('/[[:^print:]]/', '', hex2binary($bio))];
         });

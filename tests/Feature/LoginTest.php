@@ -5,6 +5,10 @@ use App\Events\InvalidLogin;
 use App\Events\SuccessfulLogin;
 use function Clue\React\Block\sleep;
 use Illuminate\Support\Facades\Event;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+beforeEach(fn () => test()->instance(ConsoleOutput::class, new BufferedOutput()));
 
 it('can sign on as a guest', function () {
     Event::fake();

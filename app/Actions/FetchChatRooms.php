@@ -75,8 +75,7 @@ class FetchChatRooms
 
     private function initializeSpinner(): void
     {
-        $output = new OutputStyle(new ArrayInput([]), $this->console);
-        $this->spinner = new Spinner($output, 1000);
+        $this->spinner = new Spinner($this->outputStyle(), 1000);
 
         $this->console->write("\033[?25l");
         $this->spinner->setMessage('Fetching chatrooms 💬');
@@ -85,5 +84,10 @@ class FetchChatRooms
         $this->spinnerTimer = Loop::addPeriodicTimer(0.003, function () {
             $this->spinner->advance();
         });
+    }
+
+    private function outputStyle(): OutputStyle
+    {
+        return resolve('Illuminate\Console\OutputStyle', [new ArrayInput([]), $this->console]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Console\OutputStyle;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(OutputStyle::class, function ($app, $parameters) {
+            return new OutputStyle(...$parameters);
+        });
     }
 }

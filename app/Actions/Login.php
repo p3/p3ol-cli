@@ -12,8 +12,9 @@ use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use function Termwind\{render}; //@codingStandardsIgnoreLine
+use Symfony\Component\Console\Output\OutputInterface; //@codingStandardsIgnoreLine
+use function Termwind\{renderUsing}; //@codingStandardsIgnoreLine
+use function Termwind\{render};
 
 class Login
 {
@@ -136,9 +137,10 @@ class Login
 
     private function initializeProgressBar(): void
     {
+        renderUsing($this->output());
         render('<div class="px-1 bg-blue-300 text-black">🖥 &nbsp;RE-AOL CLI Edition (Alpha)</div>');
 
-        $this->progressBar = new ProgressBar(new ConsoleOutput(), 100);
+        $this->progressBar = new ProgressBar($this->output(), 100);
 
         if ('\\' !== \DIRECTORY_SEPARATOR || 'Hyper' === getenv('TERM_PROGRAM')) {
             $this->progressBar->setEmptyBarCharacter('░');
@@ -155,5 +157,10 @@ class Login
     {
         $this->progressBar->setMessage($message);
         $this->progressBar->setProgress($value);
+    }
+
+    private function output(): OutputInterface
+    {
+        return resolve('Symfony\Component\Console\Output\ConsoleOutput');
     }
 }

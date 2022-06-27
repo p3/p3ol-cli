@@ -10,6 +10,7 @@ uses(Tests\TestCase::class)->in('Feature');
 
 uses()
     ->beforeEach(function () {
+        startConsole();
         test()->server = new FakeServer();
         test()->client = new FakeClient();
     })

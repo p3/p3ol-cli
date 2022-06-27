@@ -6,8 +6,6 @@ use function Clue\React\Block\sleep;
 use React\Socket\ConnectionInterface;
 
 it('can send an instant message', function () {
-    test()->startConsole();
-
     $this->client->connect(function (ConnectionInterface $connection) {
         SendInstantMessage::run($this->console, $connection, 'Guest356 how are you?');
     });

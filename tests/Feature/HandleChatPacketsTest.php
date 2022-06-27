@@ -2,9 +2,9 @@
 
 use App\Actions\HandleChatPacket;
 use App\Helpers\Packet;
+use NunoMaduro\LaravelDesktopNotifier\Facades\Notifier;
 
 it('can parse people that are in the chat room', function () {
-    test()->startConsole();
     $packet = Packet::make(test()->fixture('chat_room.joined'));
 
     HandleChatPacket::run($this->console, $packet);
@@ -13,7 +13,6 @@ it('can parse people that are in the chat room', function () {
 });
 
 it('can parse new messages in the chat room', function () {
-    test()->startConsole();
     cache(['screen_name' => 'abc']);
     $packet = Packet::make(test()->fixture('chat_room.message'));
 
@@ -23,7 +22,8 @@ it('can parse new messages in the chat room', function () {
 });
 
 it('can highlight messages mentioning screen name in the chat room', function () {
-    test()->startConsole();
+    Notifier::shouldReceive('send');
+
     cache(['screen_name' => 'test']);
     $packet = Packet::make(test()->fixture('chat_room.message'));
 
@@ -33,7 +33,8 @@ it('can highlight messages mentioning screen name in the chat room', function ()
 });
 
 it('can highlight messages mentioning handle in the chat room', function () {
-    test()->startConsole();
+    Notifier::shouldReceive('send');
+
     cache(['chat_handle' => 'just']);
     $packet = Packet::make(test()->fixture('chat_room.message'));
 
@@ -43,7 +44,6 @@ it('can highlight messages mentioning handle in the chat room', function () {
 });
 
 it('can parse exit of a user to chat room', function () {
-    test()->startConsole();
     cache(['room_list' => collect()]);
     $packet = Packet::make(test()->fixture('chat_room.exit'));
 
@@ -53,7 +53,6 @@ it('can parse exit of a user to chat room', function () {
 });
 
 it('can parse entrance of a user to chat room', function () {
-    test()->startConsole();
     cache(['room_list' => collect()]);
     $packet = Packet::make(test()->fixture('chat_room.entrance'));
 
@@ -63,8 +62,6 @@ it('can parse entrance of a user to chat room', function () {
 });
 
 it('can receive instant messages', function () {
-    test()->startConsole();
-
     $packet = Packet::make(test()->fixture('instant_message.received'));
 
     HandleChatPacket::run($this->console, $packet);

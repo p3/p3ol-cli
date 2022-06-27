@@ -14,9 +14,9 @@ class FakeServer
 
     protected ConnectionInterface $connection;
 
-    public bool $returnInvalidLogin = false;
+    protected ?string $respondWith = null;
 
-    public bool $returnNoProfile = false;
+    public bool $returnInvalidLogin = false;
 
     public Packet $packet;
 
@@ -38,13 +38,25 @@ class FakeServer
         $this->server->close();
     }
 
+    public function respondWith(string $packet): void
+    {
+        $this->respondWith = $packet;
+    }
+
     public function handlePacket(string $data): void
     {
         $this->packet = Packet::make($data);
 
+        if ($this->respondWith) {
+            $this->sendPacket($this->respondWith);
+            $this->respondWith = null;
+
+            return;
+        }
+
         match ($this->packet->token()) {
             'Dd' => $this->sendDdPacket(),
-            'ji' => $this->sendJiPacket(),
+            'ji' => $this->sendPacket(TestPacket::ji_AT_PROFILE_PACKET->value),
             'SC' => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
             'Aa' => $this->sendPacket(TestPacket::AB_PACKET->value),
             'CJ' => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
@@ -74,14 +86,6 @@ class FakeServer
         match ($this->returnInvalidLogin) {
             true => $this->sendPacket(TestPacket::Dd_INVALID_AT_PACKET->value),
             default => $this->sendPacket(TestPacket::Dd_AT_PACKET->value)
-        };
-    }
-
-    private function sendJiPacket(): void
-    {
-        match ($this->returnNoProfile) {
-            true => $this->sendPacket(TestPacket::ji_AT_NO_PROFILE_PACKET->value),
-            default => $this->sendPacket(TestPacket::ji_AT_PROFILE_PACKET->value)
         };
     }
 

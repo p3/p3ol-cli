@@ -83,7 +83,8 @@ class HandleChatPacket
 
     private function parseRoomMessage(Packet $packet): void
     {
-        [$screenName, $message] = str($packet->toHex())
+        [$screenName, $message] = $packet->takeNumber(1)
+            ->toStringableHex()
             ->substr(20)
             ->whenStartsWith('4f6e6c696e65486f7374', function (Stringable $data) {
                 return $data->replace('4f6e6c696e65486f737420', '4f6e6c696e65486f73740000');
@@ -91,7 +92,6 @@ class HandleChatPacket
             ->whenContains('7f4f6e6c696e65486f73743a09', function (Stringable $data) {
                 return $data->replace('7f4f6e6c696e65486f73743a09', '0a4f6e6c696e65486f73743a20');
             })
-            ->replaceMatches('/0d(.*?)0d$/', '')
             ->replaceLast('0000', '|')
             ->explode('|')
             ->map(fn (string $data) => trim(utf8_encode(hex2binary($data))));
@@ -113,7 +113,9 @@ class HandleChatPacket
 
     private function parseEntrance(Packet $packet): void
     {
-        with($this->parseScreenNameFromEntranceorExit($packet), function ($screenName) {
+        with($packet->takeNumber(1), function (Packet $packet) {
+            $screenName = hex2binary($packet->toStringableHex()->substr(22, strlen($packet->toHex()) - 24));
+
             cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
@@ -123,18 +125,13 @@ class HandleChatPacket
 
     private function parseGoodbye(Packet $packet): void
     {
-        with($this->parseScreenNameFromEntranceorExit($packet), function ($screenName) {
+        with($packet->takeNumber(1), function (Packet $packet) {
+            $screenName = hex2binary($packet->toStringableHex()->substr(22, strlen($packet->toHex()) - 24));
+
             cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
             $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
 
             $this->console->write($screenName.' has left the room.'.PHP_EOL);
-        });
-    }
-
-    private function parseScreenNameFromEntranceorExit(Packet $packet): string
-    {
-        return with($packet->toHex(), function (string $packet) {
-            return hex2binary(str($packet)->substr(22, strlen($packet) - 22)->replaceMatches('/0d(.*?)0d$/', ''));
         });
     }
 
