@@ -7,9 +7,9 @@ function calculatePacketLengthByte(string $packet): string
     });
 }
 
-function parseArguments(string $input, int $count = 2): array
+function parseArguments(string $input, int $count = 2, string $delimeter = ' '): array
 {
-    return with(explode(' ', $input, $count), function (array $results) use ($count) {
+    return with(explode($delimeter, $input, $count), function (array $results) use ($count) {
         return [
             ...$results,
             ...collect()->times($count - count($results))->map(fn () => null)->toArray(),

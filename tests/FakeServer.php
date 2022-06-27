@@ -16,6 +16,8 @@ class FakeServer
 
     public bool $returnInvalidLogin = false;
 
+    public bool $returnNoProfile = false;
+
     public Packet $packet;
 
     public function __construct()
@@ -42,6 +44,7 @@ class FakeServer
 
         match ($this->packet->token()) {
             'Dd' => $this->sendDdPacket(),
+            'ji' => $this->sendJiPacket(),
             'SC' => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
             'Aa' => $this->sendPacket(TestPacket::AB_PACKET->value),
             'CJ' => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
@@ -71,6 +74,14 @@ class FakeServer
         match ($this->returnInvalidLogin) {
             true => $this->sendPacket(TestPacket::Dd_INVALID_AT_PACKET->value),
             default => $this->sendPacket(TestPacket::Dd_AT_PACKET->value)
+        };
+    }
+
+    private function sendJiPacket(): void
+    {
+        match ($this->returnNoProfile) {
+            true => $this->sendPacket(TestPacket::ji_AT_NO_PROFILE_PACKET->value),
+            default => $this->sendPacket(TestPacket::ji_AT_PROFILE_PACKET->value)
         };
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Collection;
+
 class Packet
 {
     public function __construct(
@@ -42,6 +44,13 @@ class Packet
         return hex2binary(substr($this->toHex(), 16, 4));
     }
 
+    public function split(): Collection
+    {
+        return with(preg_match_all('/5a(.*?)(0d(?=5a)|0d$)/', $this->toHex(), $matches), function () use ($matches) {
+            return collect($matches[0])->filter();
+        });
+    }
+
     public function sequence(): self
     {
         $this->data = substr_replace($this->data, dechex($this->tx()).dechex($this->rx()), 10, 4);
@@ -51,9 +60,7 @@ class Packet
 
     public function incrementSequence(): void
     {
-        with(preg_match_all('/5a(.*?)(0d(?=5a)|0d$)/', $this->toHex(), $matches), function () use ($matches) {
-            collect($matches[0])->filter()->each(fn ($packet) => $this->increment($packet));
-        });
+        $this->split()->each(fn ($packet) => $this->increment($packet));
     }
 
     private function increment(string $packet): void
