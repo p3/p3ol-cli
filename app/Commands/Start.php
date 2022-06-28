@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Actions\DisplayLogonMenu;
 use App\Actions\DisplayWelcome;
 use App\Actions\FetchChatRooms;
+use App\Actions\IncreasePacketSequence;
 use App\Actions\Login;
 use App\Actions\Logoff;
 use App\Actions\StartHeartbeat;
@@ -13,7 +14,7 @@ use App\Events\InvalidLogin;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
-use App\Helpers\Packet;
+use App\ValueObjects\Packet;
 use Illuminate\Support\Facades\Event;
 use LaravelZero\Framework\Commands\Command;
 use React\EventLoop\Loop;
@@ -59,7 +60,7 @@ class Start extends Command implements SignalableCommandInterface
                             info($packet->toHex());
                         }
 
-                        $packet->incrementSequence();
+                        IncreasePacketSequence::run($packet);
                     });
                 });
 

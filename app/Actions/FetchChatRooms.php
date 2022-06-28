@@ -3,7 +3,8 @@
 namespace App\Actions;
 
 use App\Enums\ChatPacket;
-use App\Helpers\Packet;
+use App\Enums\PacketToken;
+use App\ValueObjects\Packet;
 use App\Traits\RemoveListener;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
@@ -38,7 +39,7 @@ class FetchChatRooms
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
-                if ($packet->token() === 'AT') {
+                if ($packet->token()?->name === PacketToken::AT->name) {
                     $this->packets->push($packet);
                     $this->startTimer();
                 }

@@ -3,7 +3,8 @@
 namespace App\Actions;
 
 use App\Enums\ClientPacket;
-use App\Helpers\Packet;
+use App\Enums\PacketToken;
+use App\ValueObjects\Packet;
 use App\Traits\RemoveListener;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
@@ -50,7 +51,7 @@ class FetchProfile
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
-                if ($packet->token() === 'AT') {
+                if ($packet->token()?->name === PacketToken::AT->name) {
                     $this->displayProfile($packet);
                     $this->removeListener('data', $this->connection);
                 }

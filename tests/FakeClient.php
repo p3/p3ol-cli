@@ -2,7 +2,8 @@
 
 namespace Tests;
 
-use App\Helpers\Packet;
+use App\Actions\IncreasePacketSequence;
+use App\ValueObjects\Packet;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 
@@ -13,7 +14,7 @@ class FakeClient
         with(new Connector(), function (Connector $connector) use ($callback) {
             $connector->connect('127.0.0.1:5191')->then(function (ConnectionInterface $connection) use ($callback) {
                 $connection->on('data', function (string $data) {
-                    Packet::make($data)->incrementSequence();
+                    IncreasePacketSequence::run(Packet::make($data));
                 });
 
                 $callback($connection);

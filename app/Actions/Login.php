@@ -6,15 +6,15 @@ use App\Enums\AuthPacket;
 use App\Enums\SignOnState;
 use App\Events\InvalidLogin;
 use App\Events\SuccessfulLogin;
-use App\Helpers\Packet;
 use App\Traits\RemoveListener;
+use App\ValueObjects\Packet;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use React\Socket\ConnectionInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\OutputInterface; //@codingStandardsIgnoreLine
+use Symfony\Component\Console\Output\OutputInterface;
 use function Termwind\{renderUsing}; //@codingStandardsIgnoreLine
-use function Termwind\{render};
+use function Termwind\{render}; //@codingStandardsIgnoreLine
 
 class Login
 {

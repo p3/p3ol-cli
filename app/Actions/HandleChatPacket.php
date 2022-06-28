@@ -3,7 +3,8 @@
 namespace App\Actions;
 
 use App\Enums\AtomPacket;
-use App\Helpers\Packet;
+use App\Enums\PacketToken;
+use App\ValueObjects\Packet;
 use App\Traits\Sound;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
@@ -22,11 +23,11 @@ class HandleChatPacket
     {
         $this->set('console', $console);
 
-        match ($packet->token()) {
-            'AT' => $this->parseAtomStream($packet),
-            'AB' => $this->parseRoomMessage($packet),
-            'CA' => $this->parseEntrance($packet),
-            'CB' => $this->parseGoodbye($packet),
+        match ($packet->token()?->name) {
+            PacketToken::AT->name => $this->parseAtomStream($packet),
+            PacketToken::AB->name => $this->parseRoomMessage($packet),
+            PacketToken::CA->name => $this->parseEntrance($packet),
+            PacketToken::CB->name => $this->parseGoodbye($packet),
             default => info($packet->toHex())
         };
     }

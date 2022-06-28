@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\Helpers\Packet;
+use App\ValueObjects\Packet;
 use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;

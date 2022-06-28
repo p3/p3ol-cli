@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\Enums\InstantMessagePacket;
-use App\Helpers\Packet;
+use App\ValueObjects\Packet;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
 use Lorisleiva\Actions\Concerns\AsAction;

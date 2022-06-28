@@ -1,7 +1,7 @@
 <?php
 
 use App\Actions\HandleChatPacket;
-use App\Helpers\Packet;
+use App\ValueObjects\Packet;
 use NunoMaduro\LaravelDesktopNotifier\Facades\Notifier;
 
 it('can parse people that are in the chat room', function () {

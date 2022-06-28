@@ -2,7 +2,7 @@
 
 //@codingStandardsIgnoreStart
 use App\Actions\FetchProfile;
-use App\Helpers\Packet;
+use App\ValueObjects\Packet;
 use function Clue\React\Block\sleep;
 use React\Socket\ConnectionInterface;
 use Tests\TestPacket;
