@@ -52,6 +52,7 @@ class DisplayLogonMenu
                 ->askText($style)
                 ->setPromptText('Username')
                 ->setPlaceholderText('New User')
+                ->setValidator(fn ($username) => $username !== 'New User' && strlen($username) > 2)
                 ->ask()
                 ->fetch();
 
@@ -59,7 +60,9 @@ class DisplayLogonMenu
                 ->askPassword($style)
                 ->setPromptText('Password')
                 ->setPlaceholderText('password')
-                ->setValidator(fn () => true)
+                ->setValidator(function ($password) {
+                    return strlen($password) > 4 && strlen($password) < 9 && $password !== 'password';
+                })
                 ->ask()
                 ->fetch();
 
