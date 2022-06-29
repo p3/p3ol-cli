@@ -4,8 +4,8 @@ namespace App\Actions;
 
 use App\Enums\ClientPacket;
 use App\Enums\PacketToken;
-use App\ValueObjects\Packet;
 use App\Traits\RemoveListener;
+use App\ValueObjects\Packet;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
@@ -109,7 +109,7 @@ class FetchProfile
         return once(fn () => $packet->split()->slice(2, 1)->pipe(fn ($hex) => str($hex->first())));
     }
 
-    private function cleanse(string $value): string
+    private function cleanse(?string $value): string
     {
         return preg_replace('/[^A-z ]/', '', trim(hex2binary($value))) ?: '[None]';
     }
