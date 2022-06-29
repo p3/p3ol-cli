@@ -80,7 +80,7 @@ class HandleChatPacket
         cache()->put('room_list', $roomList);
         $this->console->setAutocomplete(fn () => $roomList->toArray());
 
-        $this->console->write($roomList->implode(', ').' are currently in this room.'.PHP_EOL);
+        $this->console->write($roomList->implode(', ').' currently in this room.'.PHP_EOL);
     }
 
     private function parseRoomMessage(Packet $packet): void

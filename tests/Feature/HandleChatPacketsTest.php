@@ -9,7 +9,7 @@ it('can parse people that are in the chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain('reaol, Shaolin, TommyD, Zip, GameHost, Godly, punk, Guest53 are currently in this room.');
+    expect($this->output)->toContain('reaol, Shaolin, TommyD, Zip, GameHost, Godly, punk, Guest53 currently in this room.');
 });
 
 it('can parse new messages in the chat room', function () {
