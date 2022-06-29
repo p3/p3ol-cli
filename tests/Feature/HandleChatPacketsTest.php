@@ -49,7 +49,7 @@ it('can parse exit of a user to chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain('GuestBXB has left the room.');
+    expect($this->output)->toContain('Guest3L4U has left the room.');
 });
 
 it('can parse entrance of a user to chat room', function () {

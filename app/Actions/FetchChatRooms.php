@@ -4,8 +4,8 @@ namespace App\Actions;
 
 use App\Enums\ChatPacket;
 use App\Enums\PacketToken;
-use App\ValueObjects\Packet;
 use App\Traits\RemoveListener;
+use App\ValueObjects\Packet;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;

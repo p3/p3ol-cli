@@ -17,7 +17,7 @@ class DisplayPeopleInChat
         }
 
         if (cache('room_list')->count() === 0) {
-            $this->console->write(Color::BG_BLUE.'There are currently no other users here.'.Color::RESET.PHP_EOL);
+            $console->write(Color::BG_BLUE.'There are currently no other users here.'.Color::RESET.PHP_EOL);
         }
 
         with(new Builder(), function (Builder $builder) use ($console) {
