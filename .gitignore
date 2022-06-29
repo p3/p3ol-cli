@@ -2,6 +2,7 @@
 /.idea
 /.vscode
 /.vagrant
+/.reaol
 /storage/*
 /builds/logs
 .phpunit.result.cache

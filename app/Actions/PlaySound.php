@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use Illuminate\Support\Facades\File;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use Symfony\Component\Process\Process;
@@ -34,6 +35,14 @@ class PlaySound
     {
         cache(['sound_last_played' => microtime(true)]);
 
-        (new Process([$player, './resources/'.$this->fileName.'.wav']))->run();
+        if (! File::isDirectory(getcwd().'/.reaol')) {
+            File::makeDirectory(getcwd().'/.reaol');
+        }
+
+        if (! File::exists(getcwd().'/.reaol/'.$this->fileName.'.wav')) {
+            File::copy(resource_path().'/'.$this->fileName.'.wav', getcwd().'/.reaol/'.$this->fileName.'.wav');
+        }
+
+        (new Process([$player, getcwd().'/.reaol/'.$this->fileName.'.wav']))->run();
     }
 }
