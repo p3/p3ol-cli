@@ -26,7 +26,6 @@ class HandleChatPacket
         match ($packet->token()?->name) {
             PacketToken::AT->name => $this->parseAtomStream($packet),
             PacketToken::AB->name => $this->parseRoomMessage($packet),
-            PacketToken::CA->name => $this->parseEntrance($packet),
             default => info($packet->toHex())
         };
     }
@@ -34,6 +33,7 @@ class HandleChatPacket
     private function parseAtomStream(Packet $packet): void
     {
         match (true) {
+            $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_ENTER) => $this->parseEnter($packet),
             $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_LEAVE) => $this->parseLeave($packet),
             $this->isAtomPacket($packet, AtomPacket::INSTANT_MESSAGE) => $this->parseInstantMessage($packet),
             $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_PEOPLE) => $this->parsePeopleInRoom($packet),
@@ -69,9 +69,8 @@ class HandleChatPacket
         $roomList = $packet->takeNumber(1)
             ->toStringableHex()
             ->matchFromPacket(AtomPacket::CHAT_ROOM_PEOPLE, 6)
-            ->explode('0b01')
-            ->reject(fn ($hex) => str($hex)->contains('020201020b0200'))
-            ->map(fn ($hex) => hex2binary(str($hex)->substr(2)->replaceLast(10, '')))
+            ->matchAll('/0b01(.*?)100b04/')
+            ->map(fn ($hex) => hex2binary(str($hex)->substr(2)))
             ->filter();
 
         cache()->put('screen_name', $roomList->pop());
@@ -113,11 +112,13 @@ class HandleChatPacket
         $this->console->write($screenName.': '.$message.PHP_EOL);
     }
 
-    private function parseEntrance(Packet $packet): void
+    private function parseEnter(Packet $packet): void
     {
         $screenName = $packet->takeNumber(1)
             ->toStringableHex()
-            ->when(true, fn ($hex) => hex2binary($hex->substr(22, strlen($hex) - 24)));
+            ->matchFromPacket(AtomPacket::CHAT_ROOM_ENTER, 3)
+            ->substr(2)
+            ->when(true, fn ($hex) => hex2binary($hex));
 
         cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
         $this->console->setAutocomplete(fn () => cache('room_list')->toArray());

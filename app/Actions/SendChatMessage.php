@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Enums\ChatPacket;
-use App\ValueObjects\Packet;
 use App\Traits\Sound;
+use App\ValueObjects\Packet;
 use Lorisleiva\Actions\Concerns\AsAction;
 use React\Socket\ConnectionInterface;
 
