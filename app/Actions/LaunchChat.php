@@ -16,7 +16,7 @@ class LaunchChat
 
     protected Stdio $console;
 
-    public function handle(ConnectionInterface $connection, $roomName): void
+    public function handle(ConnectionInterface $connection, string $roomName): void
     {
         $this->set('connection', $connection);
         $this->set('roomName', $roomName);

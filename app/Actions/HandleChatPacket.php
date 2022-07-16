@@ -68,7 +68,7 @@ class HandleChatPacket
     {
         $roomList = $packet->takeNumber(1)
             ->toStringableHex()
-            ->matchFromPacket(AtomPacket::CHAT_ROOM_PEOPLE, 6)
+            ->matchFromPacket(AtomPacket::CHAT_ROOM_PEOPLE, 7)
             ->matchAll('/0b01(.*?)100b04/')
             ->map(fn ($hex) => hex2binary(str($hex)->substr(2)))
             ->filter();
