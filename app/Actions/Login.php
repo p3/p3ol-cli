@@ -44,6 +44,7 @@ class Login
             $this->needsScPacket($packet) => $this->sendScPacket(),
             $this->hasInvalidLogin($packet) => $this->handleInvalidLogin(),
             $this->hasSuccessfulLogin($packet) => $this->handleSuccessfulLogin(),
+            $this->needsUdPAcket($packet) => $this->sendUdPacket(),
             default => info($packet->toHex())
         };
     }
@@ -95,6 +96,16 @@ class Login
         $this->updateProgressBar('Step 3: Wrapping up ...', 75);
 
         $this->state = SignOnState::AWAITING_WELCOME;
+    }
+
+    private function needsUdPAcket(Packet $packet): bool
+    {
+        return $packet->token()->name === 'AT' && str_contains($packet->toHex(), '7544');
+    }
+
+    private function sendUdPacket(): void
+    {
+        $this->connection->write(Packet::make(AuthPacket::uD_PACKET->value)->prepare());
     }
 
     private function hasSuccessfulLogin(Packet $packet): bool

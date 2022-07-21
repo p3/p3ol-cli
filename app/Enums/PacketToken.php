@@ -16,6 +16,7 @@ enum PacketToken: string
     case AB = 'Incoming chat message';
     case iS = 'Send an instant message';
     case ji = 'Display member profile';
+    case uD = 'Disk update - delete complete';
 
     public static function fromString(string $value): ?self
     {
