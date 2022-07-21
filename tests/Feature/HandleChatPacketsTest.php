@@ -58,7 +58,7 @@ it('can parse user entering the chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain('GuestL has entered the room.');
+    expect($this->output)->toContain('Guest5 has entered the room.');
 });
 
 it('can receive instant messages', function () {
