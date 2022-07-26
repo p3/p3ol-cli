@@ -30,6 +30,7 @@ class HandleChatCommand
             '/handle' => SetChatHandle::run($console, $input),
             '/uptime' => DisplayUptime::run($console, $connection),
             '/profile' => FetchProfile::run($console, $connection, $input),
+            '/dump' => DisplayLastAtomPacket::run($console),
             default =>  $console->write('We could not find a command for that.'.PHP_EOL)
         };
     }
