@@ -51,7 +51,7 @@ class Login
 
     private function needsDdPacket(Packet $packet): bool
     {
-        return $this->state === SignOnState::NEEDS_Dd_PACKET && $packet->toHex() === '5ab71100037f7f240d';
+        return $this->state === SignOnState::NEEDS_Dd && $packet->takeNumber(1)->toHex() === '5ab71100037f7f240d';
     }
 
     private function sendDdPacket(): void
@@ -65,7 +65,7 @@ class Login
 
         $this->updateProgressBar('Step 2: Shaking hands ...', 50);
 
-        $this->state = SignOnState::NEEDS_SC_PACKET;
+        $this->state = SignOnState::NEEDS_SC;
     }
 
     private function sendGuestDdPacket(): void
@@ -86,7 +86,7 @@ class Login
 
     private function needsScPacket(Packet $packet): bool
     {
-        return $this->state === SignOnState::NEEDS_SC_PACKET && str_contains($packet->toHex(), '5343');
+        return $this->state === SignOnState::NEEDS_SC && str_contains($packet->toHex(), '5343');
     }
 
     private function sendScPacket(): void
@@ -100,12 +100,17 @@ class Login
 
     private function needsUdPAcket(Packet $packet): bool
     {
-        return $packet->token()->name === 'AT' && str_contains($packet->toHex(), '7544');
+        return $packet->token()?->name === 'AT' && str_contains($packet->toHex(), '7544');
     }
 
     private function sendUdPacket(): void
     {
-        $this->connection->write(Packet::make(AuthPacket::uD_PACKET->value)->prepare());
+        with(AuthPacket::uD_PACKET->value, function ($packet) {
+            $packet = str_replace('{timestamp}', bin2hex(time()), $packet);
+            $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
+
+            $this->connection->write(Packet::make($packet)->prepare());
+        });
     }
 
     private function hasSuccessfulLogin(Packet $packet): bool
@@ -115,7 +120,7 @@ class Login
 
     private function hasInvalidLogin(Packet $packet): bool
     {
-        return $this->state === SignOnState::NEEDS_SC_PACKET
+        return $this->state === SignOnState::NEEDS_SC
             && (str_contains($packet->data, 'incorrect!') || str_contains($packet->data, 'login-000002'));
     }
 
@@ -143,7 +148,7 @@ class Login
     {
         $this->connection->write(hex2binary(AuthPacket::VERSION_PACKET->value));
 
-        $this->state = SignOnState::NEEDS_Dd_PACKET;
+        $this->state = SignOnState::NEEDS_Dd;
     }
 
     private function initializeProgressBar(): void

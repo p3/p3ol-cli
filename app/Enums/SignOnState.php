@@ -10,6 +10,6 @@ enum SignOnState: string
     case ONLINE = 'online';
     case INVALID = 'invalid';
     case AWAITING_WELCOME = 'awaitingWelcome';
-    case NEEDS_Dd_PACKET = 'needsDdPacket';
-    case NEEDS_SC_PACKET = 'needsScPacket';
+    case NEEDS_Dd = 'needsDdPacket';
+    case NEEDS_SC = 'needsScPacket';
 }
