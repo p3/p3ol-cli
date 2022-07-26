@@ -9,6 +9,7 @@ it('can parse people that are in the chat room', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
+
     expect($this->output)->toContain('reaol, PoSsE4uS, Zip, Guest6ZE, Xak, Guest9 currently in this room.');
 });
 
@@ -66,5 +67,5 @@ it('can receive instant messages', function () {
 
     HandleChatPacket::run($this->console, $packet);
 
-    expect($this->output)->toContain('Howdy!');
+    expect($this->output)->toContain('hey');
 });

@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Enums\ClientPacket;
-use App\Enums\PacketToken;
 use App\Traits\RemoveListener;
 use App\ValueObjects\Packet;
 use AsciiTable\Builder;
@@ -51,7 +50,7 @@ class FetchProfile
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
-                if ($packet->token()?->name === PacketToken::AT->name) {
+                if ($packet->token() === 'AT') {
                     $this->displayProfile($packet);
                     $this->removeListener('data', $this->connection);
                 }

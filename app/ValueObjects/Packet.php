@@ -2,8 +2,8 @@
 
 namespace App\ValueObjects;
 
-use App\Enums\PacketToken;
 use App\Enums\PacketType;
+use App\Parsers\Token;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Stringable;
 
@@ -14,9 +14,19 @@ class Packet
     ) {
     }
 
-    public static function make(string $data): self
+    public static function make(string $data): mixed
     {
-        return new self($data);
+        return match (true) {
+            self::isAtomStream($data) => new AtomPacket($data),
+            default => new self($data),
+        };
+    }
+
+    public static function isAtomStream(string $data): bool
+    {
+        $data = ctype_xdigit($data) && strlen($data) % 2 === 0 ? $data : bin2hex($data);
+
+        return in_array(hex2binary(substr($data, 16, 4)), ['AT']); // 'At', 'at'
     }
 
     public function prepare(): string
@@ -47,38 +57,14 @@ class Packet
         return str($this->toHex());
     }
 
-    public function token(): ?PacketToken
+    public function token(): ?string
     {
-        return PacketToken::fromString(hex2binary(substr($this->toHex(), 16, 4)));
+        return Token::from(hex2binary(substr($this->toHex(), 16, 4)));
     }
 
     public function type(): PacketType
     {
-        return PacketType::from(hexdec(substr($this->toHex(), 14, 2)));
-    }
-
-    public function gid(): ?string
-    {
-        if ($this->token()?->name !== PacketToken::AT->name) {
-            return null;
-        }
-
-        return with($this->toStringableHex()->match('/0109(03.*|04.*)/'), function (Stringable $hex) {
-            if (! $hex->value) {
-                return null;
-            }
-
-            $length = hexdec($hex->substr(0, 2)) * 2;
-
-            return collect($hex->substr(2, $length))
-                ->flatMap(fn (string $hex) => str_split($hex, 2))
-                ->map(fn (string $hex) => hexdec($hex))
-                ->when($length === 8, function (Collection $results) {
-                    return implode('-', [$results[0], $results[1], (($results[2] * 256) + $results[3])]);
-                }, function (Collection $results) {
-                    return implode('-', [$results[0], ($results[1] * 256) + $results[2]]);
-                });
-        });
+        return PacketType::from(hexdec(substr($this->toHex(), 14, 2)) & hexdec('7F'));
     }
 
     public function takeNumber(int $number): self
@@ -87,21 +73,17 @@ class Packet
             return $this;
         }
 
-        return new self($this->split()->offsetGet($number - 1));
+        return new static($this->split()->offsetGet($number - 1));
     }
 
     public function takeType(PacketType $type): Collection
     {
-        return $this->split()
-            ->filter(fn ($hex) => PacketType::from(hexdec(substr($hex, 14, 2))) === $type)
-            ->map(fn ($hex) => self::make($hex));
+        return $this->split()->filter(fn ($hex) => PacketType::from(hexdec(substr($hex, 14, 2))) === $type);
     }
 
-    public function takeToken(PacketToken $token): Collection
+    public function takeToken(string $token): Collection
     {
-        return $this->split()
-            ->filter(fn ($hex) => PacketToken::fromString(hex2binary(substr($hex, 16, 4))) === $token)
-            ->map(fn ($hex) => self::make($hex));
+        return $this->split()->filter(fn ($hex) => hex2binary(substr($hex, 16, 4)) === $token);
     }
 
     public function count(): int

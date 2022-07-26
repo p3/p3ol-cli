@@ -3,11 +3,12 @@
 namespace App\Actions;
 
 use App\Enums\ChatPacket;
-use App\Enums\PacketToken;
 use App\Traits\RemoveListener;
+use App\ValueObjects\Atom;
 use App\ValueObjects\Packet;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Stringable;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use Rahul900Day\LaravelConsoleSpinner\Spinner;
@@ -39,7 +40,7 @@ class FetchChatRooms
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
-                if ($packet->token()?->name === PacketToken::AT->name) {
+                if ($packet->token() === 'AT') {
                     $this->packets->push($packet);
                     $this->startTimer();
                 }
@@ -47,18 +48,29 @@ class FetchChatRooms
         });
     }
 
-    private function parseChatrooms(): Collection
+    private function parseChatRooms(): Collection
     {
         return $this->packets
-            ->filter(fn (Packet $packet) => str_contains($packet->toHex(), '0001000109032000620f13020102010a010101'))
-            ->map(fn (Packet $packet) => str($packet->toHex())->after('010101000a'))
-            ->flatMap(function ($hex) {
-                preg_match_all('/06(\d{2,4})09(.*?)0202010201020001/', $hex, $output);
-
-                return collect($output[1])->zip($output[2])->toArray();
+            ->map(fn (Packet $packet) => $packet->atoms())
+            ->filter(function (Collection $atoms): bool {
+                return $atoms->firstWhere('name', 'man_set_context_globalid')?->data === '32-98';
             })
-            ->map(fn ($value) => ['people' => intval(hex2binary($value[0])), 'name' => hex2binary($value[1])])
+            ->flatMap(fn (Collection $atoms) => $this->parseChatRoomsFromAtoms($atoms))
             ->unique();
+    }
+
+    private function parseChatRoomsFromAtoms(Collection $atoms): Collection
+    {
+        return $atoms
+            ->where('name', 'man_start_object')
+            ->map(function (Atom $atom) {
+                return with(str($atom->hex)->substr(2), function (Stringable $hex) {
+                    return [
+                        'people' => intval(hex2binary($hex->before('09'))),
+                        'name' => hex2binary($hex->after('09')),
+                    ];
+                });
+            });
     }
 
     private function startTimer(): void
@@ -69,7 +81,7 @@ class FetchChatRooms
                 $this->removeListener('data', $this->connection);
                 $this->console->write("\033[?25h");
 
-                DisplayChatRooms::run($this->connection, $this->parseChatrooms());
+                DisplayChatRooms::run($this->connection, $this->parseChatRooms());
             });
         });
     }

@@ -14,6 +14,7 @@ use App\Events\InvalidLogin;
 use App\Events\QuitChat;
 use App\Events\StopHeartbeat;
 use App\Events\SuccessfulLogin;
+use App\ValueObjects\AtomPacket;
 use App\ValueObjects\Packet;
 use Illuminate\Support\Facades\Event;
 use LaravelZero\Framework\Commands\Command;
@@ -25,6 +26,7 @@ use Symfony\Component\Console\Command\SignalableCommandInterface;
 class Start extends Command implements SignalableCommandInterface
 {
     public const HOST = 'americaonline.reaol.org:5190';
+    // public const HOST = 'staging.re-aol.com:5190';
 
     protected ConnectionInterface $connection;
 
@@ -57,7 +59,11 @@ class Start extends Command implements SignalableCommandInterface
                 $connection->on('data', function ($data) {
                     with(Packet::make($data), function (Packet $packet) {
                         if (! \Phar::running()) {
-                            info($packet->toHex());
+                            $this->writeDebugLog($packet);
+                        }
+
+                        if ($packet->token() === 'AT') {
+                            cache(['last_atom_packet' => $packet->toFDO()]);
                         }
 
                         IncreasePacketSequence::run($packet);
@@ -104,6 +110,15 @@ class Start extends Command implements SignalableCommandInterface
     {
         if (isset($this->connection)) {
             Logoff::run($this->connection);
+        }
+    }
+
+    private function writeDebugLog(Packet $packet): void
+    {
+        info('Token: '.$packet->token() ?? '[None]');
+        info($packet->toHex());
+        if ($packet instanceof AtomPacket) {
+            info(PHP_EOL.$packet->toFDO());
         }
     }
 }

@@ -100,7 +100,7 @@ class Login
 
     private function needsUdPAcket(Packet $packet): bool
     {
-        return $packet->token()?->name === 'AT' && str_contains($packet->toHex(), '7544');
+        return $packet->token() === 'AT' && str_contains($packet->toHex(), '7544');
     }
 
     private function sendUdPacket(): void

@@ -4,7 +4,6 @@
 
 namespace Tests;
 
-use App\Enums\PacketToken;
 use App\ValueObjects\Packet;
 use React\Socket\ConnectionInterface;
 use React\Socket\SocketServer;
@@ -55,13 +54,13 @@ class FakeServer
             return;
         }
 
-        match ($this->packet->token()?->name) {
-            PacketToken::Dd->name => $this->sendDdPacket(),
-            PacketToken::ji->name => $this->sendPacket(TestPacket::ji_AT_PROFILE_PACKET->value),
-            PacketToken::SC->name => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
-            PacketToken::uD->name => $this->sendPacket(TestPacket::uD_AT_PACKET->value),
-            PacketToken::Aa->name => $this->sendPacket(TestPacket::AB_PACKET->value),
-            PacketToken::CJ->name => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
+        match ($this->packet->token()) {
+            'Dd' => $this->sendDdPacket(),
+            'ji' => $this->sendPacket(TestPacket::ji_AT_PROFILE_PACKET->value),
+            'SC' => $this->sendPacket(TestPacket::SC_AT_PACKET->value),
+            'uD' => $this->sendPacket(TestPacket::uD_AT_PACKET->value),
+            'Aa' => $this->sendPacket(TestPacket::AB_PACKET->value),
+            'CJ' => $this->sendPacket(TestPacket::CJ_AT_PACKET->value),
             default => $this->sendInitAckPacket()
         };
     }

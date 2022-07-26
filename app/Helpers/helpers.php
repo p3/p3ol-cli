@@ -23,7 +23,5 @@ function hex2binary(string $string): ?string
         return hex2bin($string);
     }
 
-    info('Invalid hex parsed: '.$string);
-
     return null;
 }

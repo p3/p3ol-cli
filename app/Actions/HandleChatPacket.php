@@ -2,11 +2,10 @@
 
 namespace App\Actions;
 
-use App\Enums\AtomPacket;
-use App\Enums\PacketToken;
+use App\Enums\AtomPacketEvent;
 use App\Traits\Sound;
+use App\ValueObjects\Atom;
 use App\ValueObjects\Packet;
-use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
 use Codedungeon\PHPCliColors\Color;
 use Illuminate\Support\Stringable;
@@ -23,55 +22,27 @@ class HandleChatPacket
     {
         $this->set('console', $console);
 
-        match ($packet->token()?->name) {
-            PacketToken::AT->name => $this->parseAtomStream($packet),
-            PacketToken::AB->name => $this->parseRoomMessage($packet),
+        match ($packet->token()) {
+            'AT' => $this->parseAtomStream($packet),
+            'AB' => $this->parseRoomMessage($packet),
             default => info($packet->toHex())
         };
     }
 
     private function parseAtomStream(Packet $packet): void
     {
-        match (true) {
-            $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_ENTER) => $this->parseEnter($packet),
-            $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_LEAVE) => $this->parseLeave($packet),
-            $this->isAtomPacket($packet, AtomPacket::INSTANT_MESSAGE) => $this->parseInstantMessage($packet),
-            $this->isAtomPacket($packet, AtomPacket::CHAT_ROOM_PEOPLE) => $this->parsePeopleInRoom($packet),
+        match (AtomPacketEvent::event($packet)) {
+            AtomPacketEvent::CHAT_ROOM_ENTER => $this->parseEnter($packet),
+            AtomPacketEvent::CHAT_ROOM_LEAVE => $this->parseLeave($packet),
+            AtomPacketEvent::INSTANT_MESSAGE => HandleInstantMessagePacket::run($this->console, $packet),
+            AtomPacketEvent::CHAT_ROOM_PEOPLE => $this->parsePeopleInRoom($packet),
             default => null
         };
     }
 
-    private function parseInstantMessage(Packet $packet): void
-    {
-        [$screenName, $message] = $packet->takeNumber(1)
-            ->toStringableHex()
-            ->matchFromPacket(AtomPacket::INSTANT_MESSAGE, 4)
-            ->substr(2)
-            ->replace('3a2020', '|')
-            ->explode('|')
-            ->map(fn (string $data) => hex2binary($data));
-
-        with(new Builder(), function (Builder $builder) use ($screenName, $message) {
-            $builder->setTitle('New Instant Message 💌');
-            $builder->addRow([
-                'Screenname' => $screenName,
-                'Message' =>  $message,
-            ]);
-
-            $this->console->write($builder->renderTable().PHP_EOL);
-            $this->console->write(Color::BG_BLUE.'Press the down arrow to reply'.Color::RESET.PHP_EOL);
-            PlaySound::run('im');
-        });
-    }
-
     private function parsePeopleInRoom(Packet $packet): void
     {
-        $roomList = $packet->takeNumber(1)
-            ->toStringableHex()
-            ->matchFromPacket(AtomPacket::CHAT_ROOM_PEOPLE, 7)
-            ->matchAll('/0b01(.*?)100b04/')
-            ->map(fn ($hex) => hex2binary(str($hex)->substr(2)))
-            ->filter();
+        $roomList = $packet->atoms()->where('name', 'chat_add_user')->map(fn (Atom $atom) => $atom->toBinary());
 
         cache()->put('screen_name', $roomList->pop());
         $this->console->setPrompt(cache('screen_name').': ');
@@ -114,11 +85,7 @@ class HandleChatPacket
 
     private function parseEnter(Packet $packet): void
     {
-        $screenName = $packet->takeNumber(1)
-            ->toStringableHex()
-            ->matchFromPacket(AtomPacket::CHAT_ROOM_ENTER, 3)
-            ->substr(2)
-            ->when(true, fn ($hex) => hex2binary($hex));
+        $screenName = $packet->atoms()->firstWhere('name', 'chat_add_user')->toBinary();
 
         cache(['room_list' => cache('room_list')->push($screenName)->unique()]);
         $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
@@ -128,11 +95,7 @@ class HandleChatPacket
 
     private function parseLeave(Packet $packet): void
     {
-        $screenName = $packet->takeNumber(1)
-            ->toStringableHex()
-            ->matchFromPacket(AtomPacket::CHAT_ROOM_LEAVE, 3)
-            ->substr(2)
-            ->when(true, fn ($hex) => hex2binary($hex));
+        $screenName = $packet->atoms()->firstWhere('name', 'man_get_index_by_title')->toBinary();
 
         cache(['room_list' => cache('room_list')->reject(fn ($name) => $name === $screenName)]);
         $this->console->setAutocomplete(fn () => cache('room_list')->toArray());
@@ -159,10 +122,5 @@ class HandleChatPacket
         return with(implode('|', $this->mentions($message)), function ($input) use ($message) {
             return preg_replace("/\b{$input}\b/i", Color::BG_GREEN.'$0'.Color::RESET, $message);
         });
-    }
-
-    public function isAtomPacket(Packet $packet, AtomPacket $enum): bool
-    {
-        return $packet->takeNumber(1)->toStringableHex()->is($enum->value);
     }
 }
