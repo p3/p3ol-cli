@@ -32,7 +32,7 @@ enum AtomPacketEvent
 
     private static function isChatRoomOpen(Packet $packet): bool
     {
-        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')->data !== '19-0-2') {
+        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')?->data !== '19-0-2') {
             return false;
         }
 
@@ -41,7 +41,7 @@ enum AtomPacketEvent
 
     private static function isChatRoomLeave(Packet $packet): bool
     {
-        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')->data !== '19-0-2') {
+        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')?->data !== '19-0-2') {
             return false;
         }
 
@@ -54,7 +54,7 @@ enum AtomPacketEvent
 
     private static function isChatRoomEnter(Packet $packet): bool
     {
-        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')->data !== '19-0-2') {
+        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')?->data !== '19-0-2') {
             return false;
         }
 
