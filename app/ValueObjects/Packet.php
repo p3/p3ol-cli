@@ -26,7 +26,7 @@ class Packet
     {
         $data = ctype_xdigit($data) && strlen($data) % 2 === 0 ? $data : bin2hex($data);
 
-        return in_array(hex2binary(substr($data, 16, 4)), ['AT']); // 'At', 'at'
+        return in_array(hex2binary(substr($data, 16, 4)), ['AT', 'At', 'at']);
     }
 
     public function prepare(): string

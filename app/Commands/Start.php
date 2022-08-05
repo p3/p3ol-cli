@@ -26,7 +26,6 @@ use Symfony\Component\Console\Command\SignalableCommandInterface;
 class Start extends Command implements SignalableCommandInterface
 {
     public const HOST = 'americaonline.reaol.org:5190';
-    // public const HOST = 'staging.re-aol.com:5190';
 
     protected ConnectionInterface $connection;
 

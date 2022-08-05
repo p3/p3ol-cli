@@ -7,6 +7,8 @@ class Token
     public static function from(string $token): ?string
     {
         return match ($token) {
+            'at' => 'at',
+            'At' => 'At',
             'AT' => 'AT',
             'Dd' => 'Dd',
             'SC' => 'SC',
