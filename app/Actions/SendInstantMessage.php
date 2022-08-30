@@ -44,18 +44,17 @@ class SendInstantMessage
 
     private function findOrCreateMessageSession(string $screenName): array
     {
-        return with(cache('instant_messages', collect()), function (Collection $instantMessages) use ($screenName) {
-            $session = $instantMessages->firstWhere('screenName', $screenName);
+        return with(cache('instant_messages', collect()), function (Collection $sessions) use ($screenName) {
+            $session = $sessions->firstWhere('screenName', $screenName);
 
             if (! $session) {
-                info('creating a session for '.$screenName);
-                $session = $instantMessages->push([
+                $session = $sessions->push([
                     'globalId' => null,
-                    'responseId' => $instantMessages->count(),
+                    'responseId' => $sessions->count(),
                     'screenName' => $screenName,
                 ])->last();
 
-                cache(['instant_messages' => $instantMessages]);
+                cache(['instant_messages' => $sessions]);
             }
 
             return $session;

@@ -37,11 +37,11 @@ class HandleInstantMessagePacket
 
     private function createMessageSession(): void
     {
-        with(cache('instant_messages', collect()), function (Collection $instantMessages) {
-            if (! $instantMessages->firstWhere('screenName', $this->from())) {
-                cache(['instant_messages' => $instantMessages->push([
+        with(cache('instant_messages', collect()), function (Collection $sessions) {
+            if (! $sessions->firstWhere('screenName', $this->from())) {
+                cache(['instant_messages' => $sessions->push([
                     'globalId' => $this->globalId(),
-                    'responseId' => $instantMessages->count(),
+                    'responseId' => $sessions->count(),
                     'screenName' => $this->from(),
                 ])]);
             }
