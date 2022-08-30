@@ -11,6 +11,7 @@ class Man
         return match ($atomName) {
             'man_start_object' => self::manStartObject($data),
             'man_set_context_globalid' => self::manSetContextGlobalId($data),
+            'man_set_context_response_id' => hexdec($data),
             'man_set_context_relative' => hexdec($data),
             'man_append_data' => json_encode(hex2binary($data)),
             'man_replace_data' => json_encode(hex2binary($data)),

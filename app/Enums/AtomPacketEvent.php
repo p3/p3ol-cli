@@ -25,8 +25,8 @@ enum AtomPacketEvent
 
     private static function isInstantMessage(Packet $packet): bool
     {
-        return $packet->atoms()->where('name', 'man_set_context_globalid')->contains(function ($atom): bool {
-            return str($atom->data)->is('45-*');
+        return $packet->atoms()->where('name', 'man_do_magic_response_id')->contains(function ($atom): bool {
+            return str($atom->data)->is('000020e1');
         });
     }
 

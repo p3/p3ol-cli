@@ -20,42 +20,13 @@ class HandleInstantMessagePacket
         $this->set('console', $console);
         $this->set('packet', $packet);
 
-        match (true) {
-            cache('instant_messages', collect())->has($this->globalId()) => $this->parseFromPrevious(),
-            default => $this->parseFromNew()
-        };
-    }
+        $this->createMessageSession();
 
-    private function parseFromPrevious(): void
-    {
-        $this->handleInstantMessage(
-            cache('instant_messages')[$this->globalId()],
-            $this->packet->atoms()->firstWhere('name', 'man_append_data')->toBinary()
-        );
-    }
-
-    private function parseFromNew(): void
-    {
-        with(cache('instant_messages', collect()), function (Collection $instantMessages): void {
-            cache(['instant_messages' => $instantMessages->put(
-                $this->globalId(),
-                $this->packet->atoms()->firstWhere('name', 'man_replace_data')->toBinary(),
-            )]);
-        });
-
-        $this->handleInstantMessage(
-            $this->packet->atoms()->firstWhere('name', 'man_replace_data')->toBinary(),
-            $this->packet->atoms()->firstWhere('name', 'man_append_data')->toBinary()
-        );
-    }
-
-    private function handleInstantMessage($screenName, $message): void
-    {
-        with(new Builder(), function (Builder $builder) use ($screenName, $message) {
+        with(new Builder(), function (Builder $builder) {
             $builder->setTitle('New Instant Message 💌');
             $builder->addRow([
-                'Screenname' => $screenName,
-                'Message' =>  $message,
+                'Screenname' => $this->from(),
+                'Message' => $this->message(),
             ]);
 
             $this->console->write($builder->renderTable().PHP_EOL);
@@ -64,11 +35,47 @@ class HandleInstantMessagePacket
         });
     }
 
+    private function createMessageSession(): void
+    {
+        with(cache('instant_messages', collect()), function (Collection $instantMessages) {
+            if (! $instantMessages->firstWhere('screenName', $this->from())) {
+                cache(['instant_messages' => $instantMessages->push([
+                    'globalId' => $this->globalId(),
+                    'responseId' => $instantMessages->count(),
+                    'screenName' => $this->from(),
+                ])]);
+            }
+        });
+    }
+
+    private function from(): string
+    {
+        if ($screenName = $this->packet->atoms()->firstWhere('name', 'man_replace_data')?->toBinary()) {
+            return $screenName;
+        }
+
+        return cache('instant_messages', collect())->firstWhere(['responseId' => $this->responseId()])['screenName'];
+    }
+
+    private function message(): string
+    {
+        return $this->packet->atoms()->firstWhere('name', 'man_append_data')->toBinary();
+    }
+
     private function globalId(): ?string
     {
         return once(function () {
             return $this->packet->atoms()->last(function (Atom $atom) {
                 return $atom->name === 'man_set_context_globalid';
+            })?->data;
+        });
+    }
+
+    private function responseId(): ?string
+    {
+        return once(function () {
+            return $this->packet->atoms()->last(function (Atom $atom) {
+                return $atom->name === 'man_set_context_response_id';
             })?->data;
         });
     }
