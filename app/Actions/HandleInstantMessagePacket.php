@@ -40,8 +40,8 @@ class HandleInstantMessagePacket
         with(cache('instant_messages', collect()), function (Collection $sessions) {
             if (! $sessions->firstWhere('screenName', $this->from())) {
                 cache(['instant_messages' => $sessions->push([
-                    'globalId' => $this->globalId(),
                     'responseId' => $sessions->count(),
+                    'streamId' => $this->packet->toStringableHex()->substr(20, 4)->value,
                     'screenName' => $this->from(),
                 ])]);
             }
@@ -54,21 +54,14 @@ class HandleInstantMessagePacket
             return $screenName;
         }
 
-        return cache('instant_messages', collect())->firstWhere(['responseId' => $this->responseId()])['screenName'];
+        return with(cache('instant_messages', collect()), function (Collection $sessions) {
+            return optional($sessions->firstWhere('responseId', $this->responseId()))['screenName'];
+        });
     }
 
     private function message(): string
     {
         return $this->packet->atoms()->firstWhere('name', 'man_append_data')->toBinary();
-    }
-
-    private function globalId(): ?string
-    {
-        return once(function () {
-            return $this->packet->atoms()->last(function (Atom $atom) {
-                return $atom->name === 'man_set_context_globalid';
-            })?->data;
-        });
     }
 
     private function responseId(): ?string

@@ -30,6 +30,9 @@ class SendInstantMessage
             $packet = str_replace('{message}', $messageLengthByte.bin2hex($message), $packet);
 
             $sessionMessage = $this->findOrCreateMessageSession($screenName);
+
+            $packet = str_replace('{streamId}', $sessionMessage['streamId'], $packet);
+
             $responseIdByte = str_pad(dechex($sessionMessage['responseId']), 2, '0', STR_PAD_LEFT);
             $packet = str_replace('{responseId}', $responseIdByte, $packet);
 
@@ -49,8 +52,8 @@ class SendInstantMessage
 
             if (! $session) {
                 $session = $sessions->push([
-                    'globalId' => null,
                     'responseId' => $sessions->count(),
+                    'streamId' => str_pad(dechex(mt_rand(500, 1001)), 4, '0', STR_PAD_LEFT),
                     'screenName' => $screenName,
                 ])->last();
 
