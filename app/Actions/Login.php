@@ -76,7 +76,7 @@ class Login
     private function sendAuthDdPacket(string $screenName, string $password): void
     {
         with(AuthPacket::Dd_AUTH_PACKET->value, function ($packet) use ($screenName, $password) {
-            $packet = str_replace('{screenName}', bin2hex($screenName), $packet);
+            $packet = str_replace('{screenName}', bin2hex(str_pad($screenName, 10, ' ', STR_PAD_RIGHT)), $packet);
             $packet = str_replace('{password}', bin2hex($password), $packet);
             $packet = substr_replace($packet, calculatePacketLengthByte($packet), 8, 2);
 
