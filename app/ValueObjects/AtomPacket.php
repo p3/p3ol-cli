@@ -50,7 +50,7 @@ class AtomPacket extends Packet
             return 0;
         }
 
-        if (str($this->atoms[$index - 1]?->name)->is('man_start_object')) {
+        if ($index && str($this->atoms[$index - 1]?->name)->is('man_start_object')) {
             return with($indent++, fn () => $indent);
         }
 
