@@ -61,7 +61,7 @@ class DisplayLogonMenu
                 ->setPromptText('Password')
                 ->setPlaceholderText('password')
                 ->setValidator(function ($password) {
-                    return strlen($password) > 4 && strlen($password) < 9 && $password !== 'password';
+                    return strlen($password) > 4 && $password !== 'password';
                 })
                 ->ask()
                 ->fetch();
