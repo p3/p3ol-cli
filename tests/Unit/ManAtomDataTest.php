@@ -6,7 +6,7 @@ use App\ValueObjects\Packet;
 use Tests\TestPacket;
 
 it('can parse man_set_context_globalid', function () {
-    $packet = Packet::make(TestPacket::CJ_AT_PACKET->value);
+    $packet = Packet::make(TestPacket::LB_AT_PACKET->value);
     $atom = $packet->atoms()->firstWhere('name', 'man_set_context_globalid');
 
     expect(Man::parse($atom->name, $atom->hex))->toBe('32-98');
@@ -24,7 +24,7 @@ it('can parse man_start_object', function () {
     expect(Man::parse($atoms->first()->name, $atoms->first()->hex))->toBe('ind_group, null');
     expect(Man::parse($atoms->last()->name, $atoms->last()->hex))->toBe('view, null');
 
-    $packet = Packet::make(TestPacket::CJ_AT_PACKET->value);
+    $packet = Packet::make(TestPacket::LB_AT_PACKET->value);
     $atoms = $packet->atoms()->where('name', 'man_start_object');
 
     expect(Man::parse($atoms->first()->name, $atoms->first()->hex))->toBe('trigger, "0\tdeadend"');

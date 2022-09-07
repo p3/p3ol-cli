@@ -5,7 +5,7 @@ use App\ValueObjects\Packet;
 use Tests\TestPacket;
 
 it('can parse if_last_return_true_then', function () {
-    $packet = Packet::make(TestPacket::CJ_AT_PACKET->value);
+    $packet = Packet::make(TestPacket::LB_AT_PACKET->value);
     $atom = $packet->atoms()->firstWhere('name', 'if_last_return_true_then');
 
     expect(AtomData::parse($atom->name, $atom->hex))->toBe('1, 2');
