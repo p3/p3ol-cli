@@ -17,9 +17,9 @@ function parseArguments(string $input, int $count = 2, string $delimeter = ' '):
     });
 }
 
-function hex2binary(string $string): ?string
+function hex2binary(?string $string): ?string
 {
-    if (ctype_xdigit($string) && strlen($string) % 2 == 0) {
+    if (ctype_xdigit($string ?? '') && strlen($string) % 2 == 0) {
         return hex2bin($string);
     }
 
