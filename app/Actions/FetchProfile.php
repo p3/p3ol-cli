@@ -50,7 +50,7 @@ class FetchProfile
 
         $connection->on('data', function (string $data) {
             with(Packet::make($data), function (Packet $packet) {
-                if ($packet->token() === 'AT') {
+                if (strtolower($packet->token()) === 'at') {
                     $this->displayProfile($packet);
                     $this->removeListener('data', $this->connection);
                 }

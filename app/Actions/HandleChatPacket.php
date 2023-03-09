@@ -23,7 +23,7 @@ class HandleChatPacket
         $this->set('console', $console);
 
         match ($packet->token()) {
-            'AT' => $this->parseAtomStream($packet),
+            'AT', 'at' => $this->parseAtomStream($packet),
             'AB' => $this->parseRoomMessage($packet),
             default => info($packet->toHex())
         };

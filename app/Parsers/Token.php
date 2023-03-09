@@ -10,6 +10,7 @@ class Token
             'at' => 'at',
             'At' => 'At',
             'AT' => 'AT',
+            'AA' => 'AA',
             'Dd' => 'Dd',
             'SC' => 'SC',
             'pE' => 'pE',

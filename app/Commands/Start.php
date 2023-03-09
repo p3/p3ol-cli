@@ -61,7 +61,7 @@ class Start extends Command implements SignalableCommandInterface
                             $this->writeDebugLog($packet);
                         }
 
-                        if ($packet->token() === 'AT') {
+                        if (strtolower($packet->token()) === 'at') {
                             cache(['last_atom_packet' => $packet->toFDO()]);
                         }
 

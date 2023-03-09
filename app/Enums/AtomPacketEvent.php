@@ -32,7 +32,7 @@ enum AtomPacketEvent
 
     private static function isChatRoomOpen(Packet $packet): bool
     {
-        if ($packet->atoms()->firstWhere('name', 'man_set_context_globalid')?->data !== '19-0-2') {
+        if (! str($packet->atoms()->firstWhere('name', 'man_set_context_globalid')?->data)->is('19-0-*')) {
             return false;
         }
 
