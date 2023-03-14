@@ -11,6 +11,7 @@ use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\MenuStyle;
 use function Termwind\{ask}; //@codingStandardsIgnoreLine
 use function Termwind\{render}; //@codingStandardsIgnoreLine
+use function Termwind\{terminal}; //@codingStandardsIgnoreLine
 
 class DisplayLogonMenu
 {
@@ -20,8 +21,9 @@ class DisplayLogonMenu
     public function handle(SignOnState $state): array
     {
         $this->set('state', $state);
-
-        if (! $state === SignOnState::INVALID) {
+        
+        if ($state !== SignOnState::INVALID) {
+            collect()->times(terminal()->height(), fn () =>  render(PHP_EOL));
             $this->displaySplashScreen();
         }
 
@@ -76,17 +78,15 @@ class DisplayLogonMenu
         //@codingStandardsIgnoreStart
         render(<<<'HTML'
                 <div class="py-1 ml-2">
-                    <div class="px-1 bg-blue-300 text-black">🖥 &nbsp;CLI Edition (Alpha)</div><br>
+                    <div class="px-1 bg-blue-300 text-black">🖥 &nbsp;CLI Edition</div><br>
                     <em class="mt-2 text-blue-200">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.o.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.oooooo.&nbsp;&nbsp;&nbsp;ooooo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d8P'&nbsp;&nbsp;`Y8b&nbsp;&nbsp;`888'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                        oooo&nbsp;d8b&nbsp;&nbsp;.ooooo.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8"888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                        `888""8P&nbsp;d88'&nbsp;`88b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;`888.&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                        &nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888ooo888&nbsp;8888888&nbsp;&nbsp;&nbsp;.88ooo8888.&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                        &nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;.o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`888.&nbsp;&nbsp;`88b&nbsp;&nbsp;&nbsp;&nbsp;d88'&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o&nbsp;<br>
-                        d888b&nbsp;&nbsp;&nbsp;&nbsp;`Y8bod8P'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o88o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o8888o&nbsp;&nbsp;`Y8bood8P'&nbsp;&nbsp;o888ooooood8<br>
+                        <br><br>
+                        ██████╗&nbsp;██████╗&nbsp;&nbsp;██████╗&nbsp;██╗<br>
+                        ██╔══██╗╚════██╗██╔═══██╗██║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                        ██████╔╝&nbsp;█████╔╝██║&nbsp;&nbsp;&nbsp;██║██║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                        ██╔═══╝&nbsp;&nbsp;╚═══██╗██║&nbsp;&nbsp;&nbsp;██║██║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                        ██║&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;██████╔╝╚██████╔╝███████╗<br>
                     </em>
-                    <div class="text-blue-500 mt-2">ascii by keeb</div>
                 </div>
             HTML);
         //@codingStandardsIgnoreEnd
