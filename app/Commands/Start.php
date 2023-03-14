@@ -31,7 +31,7 @@ class Start extends Command implements SignalableCommandInterface
 
     protected $signature = 'start';
 
-    protected $description = 'Start the RE-AOL CLI client';
+    protected $description = 'Start the P3OL CLI client';
 
     protected SignOnState $state = SignOnState::OFFLINE;
 

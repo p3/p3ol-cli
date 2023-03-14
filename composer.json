@@ -1,7 +1,7 @@
 {
     "name": "joecampo/retro-aol-cli",
-    "description": "An unofficial CLI version for the RE(tro)-AOL.",
-    "keywords": ["retro", "aol", "america online", "re-aol"],
+    "description": "A P3OL CLI client.",
+    "keywords": ["retro", "aol", "america online", "p3ol"],
     "homepage": "https://retroaol.org",
     "type": "project",
     "license": "MIT",
@@ -63,5 +63,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["builds/reaol"]
+    "bin": ["builds/p3ol"]
 }

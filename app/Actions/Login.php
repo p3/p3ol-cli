@@ -157,7 +157,7 @@ class Login
     private function initializeProgressBar(): void
     {
         renderUsing($this->output());
-        render('<div class="px-1 bg-blue-300 text-black">🖥 &nbsp;RE-AOL CLI Edition (Alpha)</div>');
+        render('<div class="px-1 bg-blue-300 text-black">🖥 &nbsp;P3OL CLI Edition</div>');
 
         $this->progressBar = new ProgressBar($this->output(), 100);
 
