@@ -19,8 +19,8 @@
         "php": "^8.0",
         "clue/stdio-react": "^2.6",
         "codedungeon/php-cli-colors": "^1.12",
-        "illuminate/database": "^9.0",
-        "illuminate/log": "^9.0",
+        "illuminate/database": "^10.0",
+        "illuminate/log": "^10.0",
         "laravel-zero/phar-updater": "^1.2",
         "lorisleiva/laravel-actions": "^2.4",
         "malios/php-to-ascii-table": "^3.0",
@@ -33,7 +33,7 @@
     "require-dev": {
         "clue/block-react": "^1.5",
         "fakerphp/faker": "^1.9.1",
-        "laravel-zero/framework": "^9.0",
+        "laravel-zero/framework": "^10.0",
         "mockery/mockery": "^1.4.4",
         "pestphp/pest": "^1.21.1",
         "spatie/invade": "^1.0"
