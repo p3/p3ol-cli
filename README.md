@@ -12,7 +12,7 @@ This is a MacOS/Linux CLI client built in Laravel for the [P3OL project](https:/
     - [Chat Commands](#chat-commands)
 - [Feature Pipeline](#feature-pipeline)
 
-![image](https://user-images.githubusercontent.com/3619398/173594316-ea31862b-741a-4f20-872d-d8e2a0c82bc7.png)
+![image](https://user-images.githubusercontent.com/3619398/225140733-acd10f33-895c-4dc1-a722-0d269e529fa5.png)
 
 ## Installation & Usage
 
@@ -38,8 +38,6 @@ Here is a running list of features and future features I plan to implem
 - Logging in as a Guest account
 - Joining a public chatroom
 - System notifications when your screenname 
-
-![image](https://user-images.githubusercontent.com/3619398/225140733-acd10f33-895c-4dc1-a722-0d269e529fa5.png)
 
 ### Chat Commands
 
