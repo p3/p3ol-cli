@@ -5,6 +5,7 @@ namespace App\Actions;
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Codedungeon\PHPCliColors\Color;
 
 class DisplayPeopleInChat
 {
@@ -18,6 +19,8 @@ class DisplayPeopleInChat
 
         if (cache('room_list')->count() === 0) {
             $console->write(Color::BG_BLUE.'There are currently no other users here.'.Color::RESET.PHP_EOL);
+
+            return;
         }
 
         with(new Builder(), function (Builder $builder) use ($console) {
