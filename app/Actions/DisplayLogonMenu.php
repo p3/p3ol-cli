@@ -21,7 +21,7 @@ class DisplayLogonMenu
     public function handle(SignOnState $state): array
     {
         $this->set('state', $state);
-        
+
         if ($state !== SignOnState::INVALID) {
             collect()->times(terminal()->height(), fn () =>  render(PHP_EOL));
             $this->displaySplashScreen();

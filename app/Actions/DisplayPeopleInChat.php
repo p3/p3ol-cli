@@ -4,8 +4,8 @@ namespace App\Actions;
 
 use AsciiTable\Builder;
 use Clue\React\Stdio\Stdio;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Codedungeon\PHPCliColors\Color;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class DisplayPeopleInChat
 {
