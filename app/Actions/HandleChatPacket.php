@@ -50,7 +50,9 @@ class HandleChatPacket
         cache()->put('room_list', $roomList);
         $this->console->setAutocomplete(fn () => $roomList->toArray());
 
-        $this->console->write($roomList->implode(', ').' currently in this room.'.PHP_EOL);
+        $roomList->count()
+            ? $this->console->write($roomList->implode(', ').' currently in this room.'.PHP_EOL)
+            : $this->console->write('There currently is no one else in this chat room room.'.PHP_EOL);
     }
 
     private function parseRoomMessage(Packet $packet): void
