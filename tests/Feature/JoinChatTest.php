@@ -11,5 +11,5 @@ it('it can join a chat room', function () {
 
     sleep(.1);
 
-    expect($this->server->packet->toHex())->toBe('5ac20800197f7fa0635100200001000107040000000403010276620002000d');
+    expect($this->server->packet->toHex())->toBe('5a2a2a00197f7fa0635100200001000107040000000403010276620002000d');
 });
