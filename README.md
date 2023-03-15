@@ -16,12 +16,21 @@ This is a MacOS/Linux CLI client built in Laravel for the [P3OL project](https:/
 
 ## Installation & Usage
 
-> ### Requirements
-> You will need PHP 8.1 installed on your system.
+### MacOS
 
 ```bash
 # Install P3OL-ClI
-curl -L https://github.com/p3/p3ol-cli/raw/main/install.sh | sh
+curl -L https://github.com/p3/p3ol-cli/raw/main/install-macos.sh | sh
+
+# Launch
+./p3ol
+```
+
+### Linux
+
+```bash
+# Install P3OL-ClI
+curl -L https://github.com/p3/p3ol-cli/raw/main/install-linux.sh | sh
 
 # Launch
 ./p3ol
