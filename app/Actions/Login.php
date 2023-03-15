@@ -44,7 +44,7 @@ class Login
             $this->needsScPacket($packet) => $this->sendScPacket(),
             $this->hasInvalidLogin($packet) => $this->handleInvalidLogin(),
             $this->hasSuccessfulLogin($packet) => $this->handleSuccessfulLogin(),
-            $this->needsUdPAcket($packet) => $this->sendUdPacket(),
+            $this->needsUdPacket($packet) => $this->sendUdPacket(),
             default => info($packet->toHex())
         };
     }
@@ -101,7 +101,7 @@ class Login
         $this->state = SignOnState::AWAITING_WELCOME;
     }
 
-    private function needsUdPAcket(Packet $packet): bool
+    private function needsUdPacket(Packet $packet): bool
     {
         return strtolower($packet->token()) === 'at' && str_contains($packet->toHex(), '7544');
     }
