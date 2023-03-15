@@ -5,5 +5,6 @@
 /.reaol
 /storage/*
 /builds/logs
+/packagers
 .phpunit.result.cache
 /database/database.sqlite

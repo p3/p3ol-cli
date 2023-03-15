@@ -62,6 +62,7 @@ return [
         Illuminate\Console\Scheduling\ScheduleListCommand::class,
         Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
         LaravelZero\Framework\Commands\StubPublishCommand::class,
+        Illuminate\Foundation\Console\VendorPublishCommand::class,
     ],
 
     /*
