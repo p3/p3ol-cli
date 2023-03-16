@@ -40,14 +40,6 @@ curl -L https://github.com/p3/p3ol-cli/raw/main/install-linux.sh | sh
 
 You can self-update your client by running `./p3ol self-update`.
 
-## Features
-
-Here is a running list of features and future features I plan to implem
-
-- Logging in as a Guest account
-- Joining a public chatroom
-- System notifications when your screenname 
-
 ### Chat Commands
 
 - `/quit` – Quits the chat and closes Retro AOL CLI
